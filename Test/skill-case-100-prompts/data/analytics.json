@@ -1,0 +1,202 @@
+{
+  "generated_at": "2026-05-03T04:50:28.933701+00:00",
+  "summary": {
+    "total_prompts": 100,
+    "total_turns": 12,
+    "total_tool_uses": 12,
+    "total_candidates": 6,
+    "generated_skills": 0,
+    "repeat_fix_requests": 0,
+    "average_changed_files": 1.5
+  },
+  "commands": {
+    "total": 24,
+    "successes": 16,
+    "failures": 8,
+    "unknown": 0,
+    "test_total": 12,
+    "test_successes": 8,
+    "lint_total": 12,
+    "lint_successes": 8,
+    "by_kind": {
+      "lint": {
+        "total": 12,
+        "successes": 8,
+        "failures": 4,
+        "unknown": 0,
+        "success_rate": 0.6667
+      },
+      "test": {
+        "total": 12,
+        "successes": 8,
+        "failures": 4,
+        "unknown": 0,
+        "success_rate": 0.6667
+      }
+    },
+    "success_rate": 0.6667,
+    "test_success_rate": 0.6667,
+    "lint_success_rate": 0.6667
+  },
+  "candidates": {
+    "by_status": {
+      "pending_review": 6
+    },
+    "by_source": {
+      "rule": 5,
+      "similarity": 1
+    },
+    "top": [
+      {
+        "name": "fix-failing-tests",
+        "status": "pending_review",
+        "source": "rule",
+        "score": 100,
+        "frequency_total": 25
+      },
+      {
+        "name": "fix-lint-type-errors",
+        "status": "pending_review",
+        "source": "rule",
+        "score": 100,
+        "frequency_total": 20
+      },
+      {
+        "name": "repo-to-infographic",
+        "status": "pending_review",
+        "source": "rule",
+        "score": 100,
+        "frequency_total": 10
+      },
+      {
+        "name": "review-current-diff",
+        "status": "pending_review",
+        "source": "rule",
+        "score": 100,
+        "frequency_total": 20
+      },
+      {
+        "name": "similar-release-notes-changes",
+        "status": "pending_review",
+        "source": "similarity",
+        "score": 100,
+        "frequency_total": 10
+      },
+      {
+        "name": "update-docs",
+        "status": "pending_review",
+        "source": "rule",
+        "score": 100,
+        "frequency_total": 15
+      }
+    ]
+  },
+  "repetition": {
+    "top_repeated_prompts": [
+      {
+        "key": "fix-failing-tests-1",
+        "count": 4,
+        "latest_timestamp": "2026-05-03T05:22:00+00:00",
+        "examples": [
+          "pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요",
+          "CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘",
+          "테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘"
+        ]
+      },
+      {
+        "key": "fix-failing-tests-2",
+        "count": 4,
+        "latest_timestamp": "2026-05-03T05:23:00+00:00",
+        "examples": [
+          "failing test in pytest needs fix and root cause analysis",
+          "jest failing test fix, reproduce the smallest failing case",
+          "pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요"
+        ]
+      },
+      {
+        "key": "fix-failing-tests-3",
+        "count": 4,
+        "latest_timestamp": "2026-05-03T05:24:00+00:00",
+        "examples": [
+          "CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘",
+          "테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘",
+          "failing test in pytest needs fix and root cause analysis"
+        ]
+      },
+      {
+        "key": "fix-failing-tests-4",
+        "count": 4,
+        "latest_timestamp": "2026-05-03T05:25:00+00:00",
+        "examples": [
+          "jest failing test fix, reproduce the smallest failing case",
+          "pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요",
+          "CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘"
+        ]
+      },
+      {
+        "key": "fix-failing-tests-0",
+        "count": 3,
+        "latest_timestamp": "2026-05-03T05:21:00+00:00",
+        "examples": [
+          "failing test in pytest needs fix and root cause analysis",
+          "jest failing test fix, reproduce the smallest failing case",
+          "pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요"
+        ]
+      },
+      {
+        "key": "fix-failing-tests-5",
+        "count": 3,
+        "latest_timestamp": "2026-05-03T05:19:00+00:00",
+        "examples": [
+          "테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘",
+          "failing test in pytest needs fix and root cause analysis",
+          "jest failing test fix, reproduce the smallest failing case"
+        ]
+      },
+      {
+        "key": "fix-failing-tests-6",
+        "count": 3,
+        "latest_timestamp": "2026-05-03T05:20:00+00:00",
+        "examples": [
+          "pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요",
+          "CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘",
+          "테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘"
+        ]
+      },
+      {
+        "key": "fix-lint-type-errors-0",
+        "count": 3,
+        "latest_timestamp": "2026-05-03T05:42:00+00:00",
+        "examples": [
+          "eslint prettier format 문제 정리해줘",
+          "mypy 타입 에러와 typecheck 실패를 고쳐줘",
+          "ruff check 실패 lint 오류 수정해줘"
+        ]
+      },
+      {
+        "key": "fix-lint-type-errors-1",
+        "count": 3,
+        "latest_timestamp": "2026-05-03T05:43:00+00:00",
+        "examples": [
+          "tsc 타입 오류 해결하고 동작 변경 없이 수정",
+          "eslint prettier format 문제 정리해줘",
+          "mypy 타입 에러와 typecheck 실패를 고쳐줘"
+        ]
+      },
+      {
+        "key": "fix-lint-type-errors-2",
+        "count": 3,
+        "latest_timestamp": "2026-05-03T05:44:00+00:00",
+        "examples": [
+          "ruff check 실패 lint 오류 수정해줘",
+          "tsc 타입 오류 해결하고 동작 변경 없이 수정",
+          "eslint prettier format 문제 정리해줘"
+        ]
+      }
+    ],
+    "repeat_fix_examples": []
+  },
+  "skills": {
+    "names": []
+  }
+}

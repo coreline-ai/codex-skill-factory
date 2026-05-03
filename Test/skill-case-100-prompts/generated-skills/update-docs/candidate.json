@@ -1,0 +1,178 @@
+{
+  "name": "update-docs",
+  "title": "Documentation Updater",
+  "description": "Use when the user asks to update README, docs, API documentation, usage guides, or changelog-like documentation.",
+  "score": 100,
+  "frequency_total": 15,
+  "example_prompts": [
+    "README 문서 업데이트하고 사용법 가이드 정리해줘",
+    "docs documentation 사용법을 README에 추가하고 changelog 정리",
+    "문서 설명 추가하고 설치 실행 예시를 최신 상태로 맞춰줘"
+  ],
+  "when_to_use": [
+    "README 업데이트를 요청할 때",
+    "사용법, API 문서, 개발 가이드 작성이 필요할 때"
+  ],
+  "when_not_to_use": [
+    "코드 구현이 중심인 요청"
+  ],
+  "goal": "Update documentation so it accurately reflects the current project behavior.",
+  "workflow": [
+    "관련 코드와 기존 문서를 확인한다.",
+    "독자와 목적을 판단한다.",
+    "설치, 설정, 실행, 예시를 필요한 만큼 추가한다.",
+    "낡은 내용을 제거한다.",
+    "명령어와 경로를 검증한다."
+  ],
+  "verification": [
+    "문서 명령어가 현재 구조와 맞는지 확인한다."
+  ],
+  "anti_patterns": [
+    "확인하지 않은 기능을 문서에 적지 않는다."
+  ],
+  "status": "pending_review",
+  "source": "rule",
+  "skill_spec": {
+    "schema_version": "1.0",
+    "task_archetype": "document",
+    "intent_invariant": "Update documentation so it accurately reflects the current project behavior.",
+    "top_terms": [
+      "documentation",
+      "readme",
+      "문서",
+      "update",
+      "docs",
+      "api"
+    ],
+    "variable_slots": [
+      {
+        "name": "target",
+        "description": "작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위",
+        "required": true,
+        "evidence": [],
+        "default_placeholder": "[작업 대상]"
+      },
+      {
+        "name": "constraints",
+        "description": "수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위",
+        "required": false,
+        "evidence": [
+          "확인하지 않은 기능을 문서에 적지 않는다."
+        ],
+        "default_placeholder": "[제약사항]"
+      },
+      {
+        "name": "verification",
+        "description": "테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준",
+        "required": true,
+        "evidence": [
+          "문서 명령어가 현재 구조와 맞는지 확인한다."
+        ],
+        "default_placeholder": "[검증 기준]"
+      },
+      {
+        "name": "output_format",
+        "description": "결과 응답에 포함해야 할 섹션과 형식",
+        "required": true,
+        "evidence": [],
+        "default_placeholder": "[출력 형식]"
+      }
+    ],
+    "preconditions": [
+      "작업 대상 또는 입력 자료가 명확해야 한다.",
+      "완료 여부를 판단할 검증 기준이 있어야 한다."
+    ],
+    "prompt_contract": {
+      "intent": "Update documentation so it accurately reflects the current project behavior.",
+      "input": "작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위",
+      "context": "후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.",
+      "constraints": [
+        "확인하지 않은 기능을 문서에 적지 않는다."
+      ],
+      "workflow": [
+        "관련 코드와 기존 문서를 확인한다.",
+        "독자와 목적을 판단한다.",
+        "설치, 설정, 실행, 예시를 필요한 만큼 추가한다.",
+        "낡은 내용을 제거한다.",
+        "명령어와 경로를 검증한다."
+      ],
+      "verification": [
+        "문서 명령어가 현재 구조와 맞는지 확인한다."
+      ],
+      "output": {
+        "format": "structured_summary",
+        "required_sections": [
+          "Audience",
+          "Updated sections",
+          "Examples",
+          "Validation",
+          "Follow-ups"
+        ]
+      }
+    },
+    "workflow_pattern": [
+      "관련 코드와 기존 문서를 확인한다.",
+      "독자와 목적을 판단한다.",
+      "설치, 설정, 실행, 예시를 필요한 만큼 추가한다.",
+      "낡은 내용을 제거한다.",
+      "명령어와 경로를 검증한다."
+    ],
+    "risk_controls": [
+      "특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.",
+      "검증 없이 완료 처리하지 않는다.",
+      "예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다."
+    ],
+    "output_contract": {
+      "format": "summary + evidence + validation + risks",
+      "required_sections": [
+        "Audience",
+        "Updated sections",
+        "Examples",
+        "Validation",
+        "Follow-ups"
+      ]
+    },
+    "prompt_quality": {
+      "score": 75,
+      "dimensions": {
+        "intent_clarity": 90,
+        "input_specificity": 55,
+        "constraint_clarity": 60,
+        "workflow_reusability": 90,
+        "verification_strength": 55,
+        "output_specificity": 85,
+        "generalization_safety": 88
+      },
+      "diagnostics": [
+        "입력 대상이 예시에서 충분히 명확하지 않습니다.",
+        "수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.",
+        "검증 기준이나 실행 명령이 부족합니다."
+      ]
+    },
+    "better_prompt_templates": {
+      "minimal": "Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.",
+      "high_signal": "Update documentation so it accurately reflects the current project behavior.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Audience, Updated sections, Examples, Validation, Follow-ups",
+      "clarifying": "이 요청은 `document` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘."
+    },
+    "clarifying_questions": [
+      "작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?",
+      "반드시 지켜야 할 범위, 금지사항, 스타일 또는 호환성 조건이 있나요?",
+      "완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?",
+      "불확실한 정보가 있으면 작업 전에 질문해도 되나요?"
+    ],
+    "quality_checklist": [
+      "목표가 한 문장으로 명확한가?",
+      "작업 대상 또는 입력 자료가 명시됐는가?",
+      "수정 범위와 하지 말아야 할 일이 분리됐는가?",
+      "반복 가능한 절차가 순서대로 정의됐는가?",
+      "검증 방법과 완료 기준이 포함됐는가?",
+      "결과 출력 형식이 정해졌는가?",
+      "특정 파일명/브랜치/고객명에 과적합되지 않았는가?"
+    ],
+    "generalization_notes": [
+      "예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.",
+      "특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.",
+      "한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다."
+    ]
+  }
+}

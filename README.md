@@ -379,6 +379,7 @@ ruff check tools/codex-skill-factory
 |---|---|
 | 🤖 [`AGENTS.md`](AGENTS.md) | **AI 에이전트/개발자 작업 강제 규칙** |
 | 🥇 [`docs/codex_prompt_skill_factory_dev_doc.md`](docs/codex_prompt_skill_factory_dev_doc.md) | **현행 최우선 제품 개발 문서** |
+| 🧩 [`docs/skill_template_spec.md`](docs/skill_template_spec.md) | **Skill 생성 공용 사양** — 모든 `SKILL.md`가 공유하는 섹션·기본값·archetype·품질 규칙의 단일 진실 소스 |
 | 📝 [`docs/codex_prompt_skill_factory_product_plan_expert_review.md`](docs/codex_prompt_skill_factory_product_plan_expert_review.md) | 제품 계획 전문가 리뷰 / 잠금 사항 |
 | 📁 [`dev-plan/`](dev-plan/) | 페이즈별 구현 기록 (현행 범위 판단은 위 dev_doc 우선) |
 

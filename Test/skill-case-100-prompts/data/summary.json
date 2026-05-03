@@ -1,0 +1,73 @@
+{
+  "prompt_count": 100,
+  "category_counts": {
+    "fix-failing-tests": 25,
+    "fix-lint-type-errors": 20,
+    "review-current-diff": 20,
+    "update-docs": 15,
+    "repo-to-infographic": 10,
+    "release-note-similarity": 10
+  },
+  "candidate_count": 6,
+  "candidate_names": [
+    "fix-failing-tests",
+    "fix-lint-type-errors",
+    "repo-to-infographic",
+    "review-current-diff",
+    "update-docs",
+    "similar-release-notes-changes"
+  ],
+  "generated_skill_count": 6,
+  "installed_skill_count": 0,
+  "generated_skills_dir": "Test/skill-case-100-prompts/generated-skills",
+  "analytics_summary": {
+    "total_prompts": 100,
+    "total_turns": 12,
+    "total_tool_uses": 12,
+    "total_candidates": 6,
+    "generated_skills": 0,
+    "repeat_fix_requests": 0,
+    "average_changed_files": 1.5
+  },
+  "analytics_commands": {
+    "total": 24,
+    "successes": 16,
+    "failures": 8,
+    "unknown": 0,
+    "test_total": 12,
+    "test_successes": 8,
+    "lint_total": 12,
+    "lint_successes": 8,
+    "by_kind": {
+      "lint": {
+        "total": 12,
+        "successes": 8,
+        "failures": 4,
+        "unknown": 0,
+        "success_rate": 0.6667
+      },
+      "test": {
+        "total": 12,
+        "successes": 8,
+        "failures": 4,
+        "unknown": 0,
+        "success_rate": 0.6667
+      }
+    },
+    "success_rate": 0.6667,
+    "test_success_rate": 0.6667,
+    "lint_success_rate": 0.6667
+  },
+  "quality_scores": {
+    "fix-failing-tests": 87,
+    "fix-lint-type-errors": 83,
+    "repo-to-infographic": 78,
+    "review-current-diff": 73,
+    "update-docs": 75,
+    "similar-release-notes-changes": 79
+  },
+  "source_counts": {
+    "rule": 5,
+    "similarity": 1
+  }
+}

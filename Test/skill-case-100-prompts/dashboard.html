@@ -1,0 +1,1478 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Codex Skill Factory Dashboard</title>
+<style>
+:root { color-scheme: light dark; --bg: #0f172a; --panel: #111827; --text: #e5e7eb; --muted: #94a3b8; --line: #334155; --brand: #38bdf8; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+main { max-width: 1180px; margin: 0 auto; padding: 32px; }
+h1 { margin: 0 0 8px; font-size: 34px; }
+section { margin-top: 28px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.metric, .candidate, .panel { background: rgba(17, 24, 39, .88); border: 1px solid var(--line); border-radius: 16px; padding: 16px; box-shadow: 0 16px 40px rgba(0,0,0,.18); }
+.metric span { display: block; color: var(--muted); font-size: 13px; }
+.metric strong { display: block; margin-top: 8px; font-size: 26px; }
+.candidates { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.candidate h3 { margin: 0 0 8px; }
+.pill { display: inline-block; margin: 0 6px 8px 0; padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 12px; }
+.pill.approved { color: #86efac; border-color: #166534; } .pill.ignored { color: #fca5a5; border-color: #7f1d1d; } .pill.created { color: #93c5fd; border-color: #1d4ed8; }
+.commands { display: grid; gap: 8px; margin-top: 12px; }
+details { margin: 12px 0; } summary { cursor: pointer; color: var(--brand); }
+.diagnostics { color: #fbbf24; }
+code, pre { background: #020617; border: 1px solid var(--line); border-radius: 8px; color: #bae6fd; }
+code { padding: 6px 8px; overflow-wrap: anywhere; } pre { padding: 16px; overflow: auto; max-height: 360px; }
+table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; }
+.muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Codex Skill Factory Dashboard</h1>
+  <p class="muted">VS Code Simple Browser 또는 브라우저에서 열어 후보, 반복 요청, 성공률 신호를 검토합니다. 승인/무시는 아래 CLI 명령을 터미널에서 실행하세요.</p>
+
+  <section class="grid">
+    <div class='metric'><span>Prompts</span><strong>100</strong></div>
+    <div class='metric'><span>Candidates</span><strong>6</strong></div>
+    <div class='metric'><span>Generated Skills</span><strong>0</strong></div>
+    <div class='metric'><span>Tool Uses</span><strong>12</strong></div>
+    <div class='metric'><span>Command Success</span><strong>0.6667</strong></div>
+    <div class='metric'><span>Test Success</span><strong>0.6667</strong></div>
+    <div class='metric'><span>Lint Success</span><strong>0.6667</strong></div>
+    <div class='metric'><span>Repeat Fix Requests</span><strong>0</strong></div>
+  </section>
+
+  <section class="panel">
+    <h2>VS Code Tasks</h2>
+    <div class="commands">
+      <code>Tasks: Run Task → Codex Skill Factory: Inbox</code>
+      <code>Tasks: Run Task → Codex Skill Factory: Dashboard</code>
+      <code>Open .codex-skill-suggestions/dashboard.html with Simple Browser</code>
+    </div>
+  </section>
+
+  <section>
+    <h2>Skill Candidates</h2>
+    <div class="candidates"><article class='candidate'><div><h3>fix-failing-tests</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to fix failing tests, CI failures, pytest/Jest errors, broken test suites, or red builds.</p><p><b>Score</b> 100 · <b>Frequency</b> 25 · <b>Prompt Quality</b> 87</p><ul><li>pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요</li><li>failing test in pytest needs fix and root cause analysis</li><li>CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘</li></ul><ul class='diagnostics'><li>Skill 생성을 위한 핵심 계약 정보가 충분합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Find the root cause of failing tests and apply the smallest safe fix. 대상은 [작업 대상]입니다. 완료 후 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Find the root cause of failing tests and apply the smallest safe fix.
+
+대상:
+- [작업 대상]
+
+제약:
+- [수정 범위와 금지사항]
+- 확인하지 않은 사실은 단정하지 않기
+
+절차:
+1. 먼저 목표, 입력, 현재 상태를 확인해줘.
+2. 필요한 최소 범위로 작업해줘.
+3. 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 검증해줘.
+4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
+
+출력:
+- Root cause, What changed, Files touched, Validation, Risks</pre></details><div class='commands'><code>codex-skill-factory promote fix-failing-tests --repo . --yes</code><code>codex-skill-factory preview fix-failing-tests --repo .</code><code>codex-skill-factory ignore fix-failing-tests --repo .</code></div></article><article class='candidate'><div><h3>fix-lint-type-errors</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to fix lint, formatting, typecheck, mypy, tsc, ruff, eslint, or static analysis errors.</p><p><b>Score</b> 100 · <b>Frequency</b> 20 · <b>Prompt Quality</b> 83</p><ul><li>ruff check 실패 lint 오류 수정해줘</li><li>mypy 타입 에러와 typecheck 실패를 고쳐줘</li><li>eslint prettier format 문제 정리해줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Fix lint and type errors with minimal behavior-changing edits. 대상은 [작업 대상]입니다. 완료 후 원래 실패한 명령을 다시 실행한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Fix lint and type errors with minimal behavior-changing edits.
+
+대상:
+- [작업 대상]
+
+제약:
+- [수정 범위와 금지사항]
+- 확인하지 않은 사실은 단정하지 않기
+
+절차:
+1. 먼저 목표, 입력, 현재 상태를 확인해줘.
+2. 필요한 최소 범위로 작업해줘.
+3. 원래 실패한 명령을 다시 실행한다. 기준으로 검증해줘.
+4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
+
+출력:
+- Root cause, What changed, Files touched, Validation, Risks</pre></details><div class='commands'><code>codex-skill-factory promote fix-lint-type-errors --repo . --yes</code><code>codex-skill-factory preview fix-lint-type-errors --repo .</code><code>codex-skill-factory ignore fix-lint-type-errors --repo .</code></div></article><article class='candidate'><div><h3>repo-to-infographic</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to analyze a GitHub repository and create a concise 16:9 infographic brief or image-generation prompt.</p><p><b>Score</b> 100 · <b>Frequency</b> 10 · <b>Prompt Quality</b> 78</p><ul><li>GitHub 저장소 분석해서 16:9 인포그래픽 이미지 프롬프트 만들어줘</li><li>레포 분석 후 상세하고 간략한 스타일 적용 인포그래픽 설계</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Turn repository information into a clear, attractive, accurate infographic plan.
+
+대상:
+- [작업 대상]
+
+제약:
+- [수정 범위와 금지사항]
+- 확인하지 않은 사실은 단정하지 않기
+
+절차:
+1. 먼저 목표, 입력, 현재 상태를 확인해줘.
+2. 필요한 최소 범위로 작업해줘.
+3. README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 검증해줘.
+4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
+
+출력:
+- Summary, Inputs, Actions, Validation, Risks or follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote repo-to-infographic --repo . --yes</code><code>codex-skill-factory preview repo-to-infographic --repo .</code><code>codex-skill-factory ignore repo-to-infographic --repo .</code></div></article><article class='candidate'><div><h3>review-current-diff</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to review the current git diff, PR changes, code changes, or wants risk and bug analysis before committing.</p><p><b>Score</b> 100 · <b>Frequency</b> 20 · <b>Prompt Quality</b> 73</p><ul><li>현재 diff 리뷰하고 PR 전 위험 검토해줘</li><li>review this current git diff before merge</li><li>변경사항 검토하고 누락 테스트와 회귀 위험 찾아줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li><li>수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.</li><li>검증 기준이나 실행 명령이 부족합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Review the current changes for correctness, risk, maintainability, and missing tests. 대상은 [작업 대상]입니다. 완료 후 diff 근거로만 리뷰한다. 기준으로 확인하고 Findings, Evidence, Risk level, Suggested fixes, Missing tests 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Review the current changes for correctness, risk, maintainability, and missing tests.
+
+대상:
+- [작업 대상]
+
+제약:
+- [수정 범위와 금지사항]
+- 확인하지 않은 사실은 단정하지 않기
+
+절차:
+1. 먼저 목표, 입력, 현재 상태를 확인해줘.
+2. 필요한 최소 범위로 작업해줘.
+3. diff 근거로만 리뷰한다. 기준으로 검증해줘.
+4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
+
+출력:
+- Findings, Evidence, Risk level, Suggested fixes, Missing tests</pre></details><div class='commands'><code>codex-skill-factory promote review-current-diff --repo . --yes</code><code>codex-skill-factory preview review-current-diff --repo .</code><code>codex-skill-factory ignore review-current-diff --repo .</code></div></article><article class='candidate'><div><h3>update-docs</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to update README, docs, API documentation, usage guides, or changelog-like documentation.</p><p><b>Score</b> 100 · <b>Frequency</b> 15 · <b>Prompt Quality</b> 75</p><ul><li>README 문서 업데이트하고 사용법 가이드 정리해줘</li><li>docs documentation 사용법을 README에 추가하고 changelog 정리</li><li>문서 설명 추가하고 설치 실행 예시를 최신 상태로 맞춰줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li><li>수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.</li><li>검증 기준이나 실행 명령이 부족합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Update documentation so it accurately reflects the current project behavior.
+
+대상:
+- [작업 대상]
+
+제약:
+- [수정 범위와 금지사항]
+- 확인하지 않은 사실은 단정하지 않기
+
+절차:
+1. 먼저 목표, 입력, 현재 상태를 확인해줘.
+2. 필요한 최소 범위로 작업해줘.
+3. 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 검증해줘.
+4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
+
+출력:
+- Audience, Updated sections, Examples, Validation, Follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote update-docs --repo . --yes</code><code>codex-skill-factory preview update-docs --repo .</code><code>codex-skill-factory ignore update-docs --repo .</code></div></article><article class='candidate'><div><h3>similar-release-notes-changes</h3><span class='pill pending_review'>pending_review</span><span class='pill'>similarity</span></div><p>Use when the user repeatedly asks semantically similar requests represented by this prompt cluster (10 examples).</p><p><b>Score</b> 100 · <b>Frequency</b> 10 · <b>Prompt Quality</b> 79</p><ul><li>prepare release notes from current commits and summarize notable changes</li><li>generate release summary from git commits with breaking changes and migration notes</li><li>write a release announcement from merged commits and categorize changes</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill. 대상은 [작업 대상]입니다. 완료 후 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.
+
+대상:
+- [작업 대상]
+
+제약:
+- [수정 범위와 금지사항]
+- 확인하지 않은 사실은 단정하지 않기
+
+절차:
+1. 먼저 목표, 입력, 현재 상태를 확인해줘.
+2. 필요한 최소 범위로 작업해줘.
+3. 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 검증해줘.
+4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
+
+출력:
+- Summary, Inputs, Actions, Validation, Risks or follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote similar-release-notes-changes --repo . --yes</code><code>codex-skill-factory preview similar-release-notes-changes --repo .</code><code>codex-skill-factory ignore similar-release-notes-changes --repo .</code></div></article></div>
+  </section>
+
+  <section class="panel">
+    <h2>Repeated Prompts TOP 10</h2>
+    <table><thead><tr><th>Count</th><th>Example</th></tr></thead><tbody><tr><td>4</td><td>pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요</td></tr><tr><td>4</td><td>failing test in pytest needs fix and root cause analysis</td></tr><tr><td>4</td><td>CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘</td></tr><tr><td>4</td><td>jest failing test fix, reproduce the smallest failing case</td></tr><tr><td>3</td><td>failing test in pytest needs fix and root cause analysis</td></tr><tr><td>3</td><td>테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘</td></tr><tr><td>3</td><td>pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요</td></tr><tr><td>3</td><td>eslint prettier format 문제 정리해줘</td></tr><tr><td>3</td><td>tsc 타입 오류 해결하고 동작 변경 없이 수정</td></tr><tr><td>3</td><td>ruff check 실패 lint 오류 수정해줘</td></tr></tbody></table>
+  </section>
+
+  <section class="panel">
+    <h2>Raw Dashboard Data</h2>
+    <pre>{
+  &quot;analytics&quot;: {
+    &quot;generated_at&quot;: &quot;2026-05-03T04:50:28.933701+00:00&quot;,
+    &quot;summary&quot;: {
+      &quot;total_prompts&quot;: 100,
+      &quot;total_turns&quot;: 12,
+      &quot;total_tool_uses&quot;: 12,
+      &quot;total_candidates&quot;: 6,
+      &quot;generated_skills&quot;: 0,
+      &quot;repeat_fix_requests&quot;: 0,
+      &quot;average_changed_files&quot;: 1.5
+    },
+    &quot;commands&quot;: {
+      &quot;total&quot;: 24,
+      &quot;successes&quot;: 16,
+      &quot;failures&quot;: 8,
+      &quot;unknown&quot;: 0,
+      &quot;test_total&quot;: 12,
+      &quot;test_successes&quot;: 8,
+      &quot;lint_total&quot;: 12,
+      &quot;lint_successes&quot;: 8,
+      &quot;by_kind&quot;: {
+        &quot;lint&quot;: {
+          &quot;total&quot;: 12,
+          &quot;successes&quot;: 8,
+          &quot;failures&quot;: 4,
+          &quot;unknown&quot;: 0,
+          &quot;success_rate&quot;: 0.6667
+        },
+        &quot;test&quot;: {
+          &quot;total&quot;: 12,
+          &quot;successes&quot;: 8,
+          &quot;failures&quot;: 4,
+          &quot;unknown&quot;: 0,
+          &quot;success_rate&quot;: 0.6667
+        }
+      },
+      &quot;success_rate&quot;: 0.6667,
+      &quot;test_success_rate&quot;: 0.6667,
+      &quot;lint_success_rate&quot;: 0.6667
+    },
+    &quot;candidates&quot;: {
+      &quot;by_status&quot;: {
+        &quot;pending_review&quot;: 6
+      },
+      &quot;by_source&quot;: {
+        &quot;rule&quot;: 5,
+        &quot;similarity&quot;: 1
+      },
+      &quot;top&quot;: [
+        {
+          &quot;name&quot;: &quot;fix-failing-tests&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;rule&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 25
+        },
+        {
+          &quot;name&quot;: &quot;fix-lint-type-errors&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;rule&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 20
+        },
+        {
+          &quot;name&quot;: &quot;repo-to-infographic&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;rule&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 10
+        },
+        {
+          &quot;name&quot;: &quot;review-current-diff&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;rule&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 20
+        },
+        {
+          &quot;name&quot;: &quot;similar-release-notes-changes&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;similarity&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 10
+        },
+        {
+          &quot;name&quot;: &quot;update-docs&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;rule&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 15
+        }
+      ]
+    },
+    &quot;repetition&quot;: {
+      &quot;top_repeated_prompts&quot;: [
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-1&quot;,
+          &quot;count&quot;: 4,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:22:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;,
+            &quot;CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘&quot;,
+            &quot;테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-2&quot;,
+          &quot;count&quot;: 4,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:23:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;failing test in pytest needs fix and root cause analysis&quot;,
+            &quot;jest failing test fix, reproduce the smallest failing case&quot;,
+            &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-3&quot;,
+          &quot;count&quot;: 4,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:24:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘&quot;,
+            &quot;테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘&quot;,
+            &quot;failing test in pytest needs fix and root cause analysis&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-4&quot;,
+          &quot;count&quot;: 4,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:25:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;jest failing test fix, reproduce the smallest failing case&quot;,
+            &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;,
+            &quot;CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-0&quot;,
+          &quot;count&quot;: 3,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:21:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;failing test in pytest needs fix and root cause analysis&quot;,
+            &quot;jest failing test fix, reproduce the smallest failing case&quot;,
+            &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-5&quot;,
+          &quot;count&quot;: 3,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:19:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘&quot;,
+            &quot;failing test in pytest needs fix and root cause analysis&quot;,
+            &quot;jest failing test fix, reproduce the smallest failing case&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-failing-tests-6&quot;,
+          &quot;count&quot;: 3,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:20:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;,
+            &quot;CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘&quot;,
+            &quot;테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-lint-type-errors-0&quot;,
+          &quot;count&quot;: 3,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:42:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;eslint prettier format 문제 정리해줘&quot;,
+            &quot;mypy 타입 에러와 typecheck 실패를 고쳐줘&quot;,
+            &quot;ruff check 실패 lint 오류 수정해줘&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-lint-type-errors-1&quot;,
+          &quot;count&quot;: 3,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:43:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;tsc 타입 오류 해결하고 동작 변경 없이 수정&quot;,
+            &quot;eslint prettier format 문제 정리해줘&quot;,
+            &quot;mypy 타입 에러와 typecheck 실패를 고쳐줘&quot;
+          ]
+        },
+        {
+          &quot;key&quot;: &quot;fix-lint-type-errors-2&quot;,
+          &quot;count&quot;: 3,
+          &quot;latest_timestamp&quot;: &quot;2026-05-03T05:44:00+00:00&quot;,
+          &quot;examples&quot;: [
+            &quot;ruff check 실패 lint 오류 수정해줘&quot;,
+            &quot;tsc 타입 오류 해결하고 동작 변경 없이 수정&quot;,
+            &quot;eslint prettier format 문제 정리해줘&quot;
+          ]
+        }
+      ],
+      &quot;repeat_fix_examples&quot;: []
+    },
+    &quot;skills&quot;: {
+      &quot;names&quot;: []
+    }
+  },
+  &quot;candidates&quot;: [
+    {
+      &quot;name&quot;: &quot;fix-failing-tests&quot;,
+      &quot;title&quot;: &quot;Failing Test Fixer&quot;,
+      &quot;description&quot;: &quot;Use when the user asks to fix failing tests, CI failures, pytest/Jest errors, broken test suites, or red builds.&quot;,
+      &quot;score&quot;: 100,
+      &quot;frequency_total&quot;: 25,
+      &quot;example_prompts&quot;: [
+        &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;,
+        &quot;failing test in pytest needs fix and root cause analysis&quot;,
+        &quot;CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘&quot;,
+        &quot;jest failing test fix, reproduce the smallest failing case&quot;,
+        &quot;테스트 깨졌어 pytest 로그 보고 원인 찾아 수정해줘&quot;
+      ],
+      &quot;when_to_use&quot;: [
+        &quot;테스트 실패 원인 분석을 요청할 때&quot;,
+        &quot;CI 실패 또는 red build 수정을 요청할 때&quot;
+      ],
+      &quot;when_not_to_use&quot;: [
+        &quot;새 기능에 대한 테스트를 처음 작성하는 요청&quot;
+      ],
+      &quot;goal&quot;: &quot;Find the root cause of failing tests and apply the smallest safe fix.&quot;,
+      &quot;workflow&quot;: [
+        &quot;실패한 테스트 명령과 에러를 확인한다.&quot;,
+        &quot;가장 작은 범위로 실패를 재현한다.&quot;,
+        &quot;관련 파일만 먼저 조사한다.&quot;,
+        &quot;최소 수정안을 적용한다.&quot;,
+        &quot;타깃 테스트를 다시 실행한다.&quot;,
+        &quot;원인, 변경 파일, 실행 명령, 리스크를 요약한다.&quot;
+      ],
+      &quot;verification&quot;: [
+        &quot;수정 전 실패를 재현했는지 확인한다.&quot;,
+        &quot;수정 후 타깃 테스트가 통과했는지 확인한다.&quot;
+      ],
+      &quot;anti_patterns&quot;: [
+        &quot;assertion 삭제 금지&quot;,
+        &quot;무관한 대규모 리팩토링 금지&quot;
+      ],
+      &quot;status&quot;: &quot;pending_review&quot;,
+      &quot;source&quot;: &quot;rule&quot;,
+      &quot;skill_spec&quot;: {
+        &quot;schema_version&quot;: &quot;1.0&quot;,
+        &quot;task_archetype&quot;: &quot;fix&quot;,
+        &quot;intent_invariant&quot;: &quot;Find the root cause of failing tests and apply the smallest safe fix.&quot;,
+        &quot;top_terms&quot;: [
+          &quot;failing&quot;,
+          &quot;test&quot;,
+          &quot;테스트&quot;,
+          &quot;fix&quot;,
+          &quot;pytest&quot;,
+          &quot;실패&quot;
+        ],
+        &quot;variable_slots&quot;: [
+          {
+            &quot;name&quot;: &quot;target&quot;,
+            &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;tests/test_api.py&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;constraints&quot;,
+            &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
+            &quot;required&quot;: false,
+            &quot;evidence&quot;: [
+              &quot;assertion 삭제 금지&quot;,
+              &quot;무관한 대규모 리팩토링 금지&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;verification&quot;,
+            &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;pytest/Jest errors, broken test suites, or red builds.&quot;,
+              &quot;pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요&quot;,
+              &quot;pytest needs fix and root cause analysis&quot;,
+              &quot;jest failing test fix, reproduce the smallest failing case&quot;,
+              &quot;pytest 로그 보고 원인 찾아 수정해줘&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;output_format&quot;,
+            &quot;description&quot;: &quot;결과 응답에 포함해야 할 섹션과 형식&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[출력 형식]&quot;
+          }
+        ],
+        &quot;preconditions&quot;: [
+          &quot;작업 대상 또는 입력 자료가 명확해야 한다.&quot;,
+          &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
+        ],
+        &quot;prompt_contract&quot;: {
+          &quot;intent&quot;: &quot;Find the root cause of failing tests and apply the smallest safe fix.&quot;,
+          &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+          &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
+          &quot;constraints&quot;: [
+            &quot;assertion 삭제 금지&quot;,
+            &quot;무관한 대규모 리팩토링 금지&quot;
+          ],
+          &quot;workflow&quot;: [
+            &quot;실패한 테스트 명령과 에러를 확인한다.&quot;,
+            &quot;가장 작은 범위로 실패를 재현한다.&quot;,
+            &quot;관련 파일만 먼저 조사한다.&quot;,
+            &quot;최소 수정안을 적용한다.&quot;,
+            &quot;타깃 테스트를 다시 실행한다.&quot;,
+            &quot;원인, 변경 파일, 실행 명령, 리스크를 요약한다.&quot;
+          ],
+          &quot;verification&quot;: [
+            &quot;수정 전 실패를 재현했는지 확인한다.&quot;,
+            &quot;수정 후 타깃 테스트가 통과했는지 확인한다.&quot;
+          ],
+          &quot;output&quot;: {
+            &quot;format&quot;: &quot;structured_summary&quot;,
+            &quot;required_sections&quot;: [
+              &quot;Root cause&quot;,
+              &quot;What changed&quot;,
+              &quot;Files touched&quot;,
+              &quot;Validation&quot;,
+              &quot;Risks&quot;
+            ]
+          }
+        },
+        &quot;workflow_pattern&quot;: [
+          &quot;실패한 테스트 명령과 에러를 확인한다.&quot;,
+          &quot;가장 작은 범위로 실패를 재현한다.&quot;,
+          &quot;관련 파일만 먼저 조사한다.&quot;,
+          &quot;최소 수정안을 적용한다.&quot;,
+          &quot;타깃 테스트를 다시 실행한다.&quot;,
+          &quot;원인, 변경 파일, 실행 명령, 리스크를 요약한다.&quot;
+        ],
+        &quot;risk_controls&quot;: [
+          &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
+          &quot;검증 없이 완료 처리하지 않는다.&quot;,
+          &quot;예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다.&quot;
+        ],
+        &quot;output_contract&quot;: {
+          &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
+          &quot;required_sections&quot;: [
+            &quot;Root cause&quot;,
+            &quot;What changed&quot;,
+            &quot;Files touched&quot;,
+            &quot;Validation&quot;,
+            &quot;Risks&quot;
+          ]
+        },
+        &quot;prompt_quality&quot;: {
+          &quot;score&quot;: 87,
+          &quot;dimensions&quot;: {
+            &quot;intent_clarity&quot;: 90,
+            &quot;input_specificity&quot;: 70,
+            &quot;constraint_clarity&quot;: 75,
+            &quot;workflow_reusability&quot;: 100,
+            &quot;verification_strength&quot;: 100,
+            &quot;output_specificity&quot;: 85,
+            &quot;generalization_safety&quot;: 88
+          },
+          &quot;diagnostics&quot;: [
+            &quot;Skill 생성을 위한 핵심 계약 정보가 충분합니다.&quot;
+          ]
+        },
+        &quot;better_prompt_templates&quot;: {
+          &quot;minimal&quot;: &quot;Find the root cause of failing tests and apply the smallest safe fix. 대상은 [작업 대상]입니다. 완료 후 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Find the root cause of failing tests and apply the smallest safe fix.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Root cause, What changed, Files touched, Validation, Risks&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `fix` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+        },
+        &quot;clarifying_questions&quot;: [
+          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
+          &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
+        ],
+        &quot;quality_checklist&quot;: [
+          &quot;목표가 한 문장으로 명확한가?&quot;,
+          &quot;작업 대상 또는 입력 자료가 명시됐는가?&quot;,
+          &quot;수정 범위와 하지 말아야 할 일이 분리됐는가?&quot;,
+          &quot;반복 가능한 절차가 순서대로 정의됐는가?&quot;,
+          &quot;검증 방법과 완료 기준이 포함됐는가?&quot;,
+          &quot;결과 출력 형식이 정해졌는가?&quot;,
+          &quot;특정 파일명/브랜치/고객명에 과적합되지 않았는가?&quot;
+        ],
+        &quot;generalization_notes&quot;: [
+          &quot;예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.&quot;,
+          &quot;특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.&quot;,
+          &quot;한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다.&quot;,
+          &quot;수정형 Skill은 원인 분석과 검증 명령을 항상 포함해야 한다.&quot;
+        ]
+      }
+    },
+    {
+      &quot;name&quot;: &quot;fix-lint-type-errors&quot;,
+      &quot;title&quot;: &quot;Lint and Type Error Fixer&quot;,
+      &quot;description&quot;: &quot;Use when the user asks to fix lint, formatting, typecheck, mypy, tsc, ruff, eslint, or static analysis errors.&quot;,
+      &quot;score&quot;: 100,
+      &quot;frequency_total&quot;: 20,
+      &quot;example_prompts&quot;: [
+        &quot;ruff check 실패 lint 오류 수정해줘&quot;,
+        &quot;mypy 타입 에러와 typecheck 실패를 고쳐줘&quot;,
+        &quot;eslint prettier format 문제 정리해줘&quot;,
+        &quot;tsc 타입 오류 해결하고 동작 변경 없이 수정&quot;
+      ],
+      &quot;when_to_use&quot;: [
+        &quot;lint 오류 수정을 요청할 때&quot;,
+        &quot;타입 체크 실패를 해결해야 할 때&quot;
+      ],
+      &quot;when_not_to_use&quot;: [
+        &quot;런타임 버그 수정을 요청하는 경우&quot;
+      ],
+      &quot;goal&quot;: &quot;Fix lint and type errors with minimal behavior-changing edits.&quot;,
+      &quot;workflow&quot;: [
+        &quot;실패 명령과 출력을 확인한다.&quot;,
+        &quot;오류를 파일별로 그룹화한다.&quot;,
+        &quot;자동 포맷과 수동 수정을 구분한다.&quot;,
+        &quot;동작 변경 없이 최소 수정한다.&quot;,
+        &quot;동일 명령을 다시 실행한다.&quot;
+      ],
+      &quot;verification&quot;: [
+        &quot;원래 실패한 명령을 다시 실행한다.&quot;
+      ],
+      &quot;anti_patterns&quot;: [
+        &quot;무리하게 any로 덮지 않는다.&quot;,
+        &quot;lint rule을 이유 없이 비활성화하지 않는다.&quot;
+      ],
+      &quot;status&quot;: &quot;pending_review&quot;,
+      &quot;source&quot;: &quot;rule&quot;,
+      &quot;skill_spec&quot;: {
+        &quot;schema_version&quot;: &quot;1.0&quot;,
+        &quot;task_archetype&quot;: &quot;fix&quot;,
+        &quot;intent_invariant&quot;: &quot;Fix lint and type errors with minimal behavior-changing edits.&quot;,
+        &quot;top_terms&quot;: [
+          &quot;lint&quot;,
+          &quot;오류&quot;,
+          &quot;타입&quot;,
+          &quot;없이&quot;,
+          &quot;type&quot;,
+          &quot;fix&quot;
+        ],
+        &quot;variable_slots&quot;: [
+          {
+            &quot;name&quot;: &quot;target&quot;,
+            &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;constraints&quot;,
+            &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
+            &quot;required&quot;: false,
+            &quot;evidence&quot;: [
+              &quot;무리하게 any로 덮지 않는다.&quot;,
+              &quot;lint rule을 이유 없이 비활성화하지 않는다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;verification&quot;,
+            &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;mypy, tsc, ruff, eslint, or static analysis errors.&quot;,
+              &quot;ruff check 실패 lint 오류 수정해줘&quot;,
+              &quot;mypy 타입 에러와 typecheck 실패를 고쳐줘&quot;,
+              &quot;eslint prettier format 문제 정리해줘&quot;,
+              &quot;tsc 타입 오류 해결하고 동작 변경 없이 수정&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;output_format&quot;,
+            &quot;description&quot;: &quot;결과 응답에 포함해야 할 섹션과 형식&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[출력 형식]&quot;
+          }
+        ],
+        &quot;preconditions&quot;: [
+          &quot;작업 대상 또는 입력 자료가 명확해야 한다.&quot;,
+          &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
+        ],
+        &quot;prompt_contract&quot;: {
+          &quot;intent&quot;: &quot;Fix lint and type errors with minimal behavior-changing edits.&quot;,
+          &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+          &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
+          &quot;constraints&quot;: [
+            &quot;무리하게 any로 덮지 않는다.&quot;,
+            &quot;lint rule을 이유 없이 비활성화하지 않는다.&quot;
+          ],
+          &quot;workflow&quot;: [
+            &quot;실패 명령과 출력을 확인한다.&quot;,
+            &quot;오류를 파일별로 그룹화한다.&quot;,
+            &quot;자동 포맷과 수동 수정을 구분한다.&quot;,
+            &quot;동작 변경 없이 최소 수정한다.&quot;,
+            &quot;동일 명령을 다시 실행한다.&quot;
+          ],
+          &quot;verification&quot;: [
+            &quot;원래 실패한 명령을 다시 실행한다.&quot;
+          ],
+          &quot;output&quot;: {
+            &quot;format&quot;: &quot;structured_summary&quot;,
+            &quot;required_sections&quot;: [
+              &quot;Root cause&quot;,
+              &quot;What changed&quot;,
+              &quot;Files touched&quot;,
+              &quot;Validation&quot;,
+              &quot;Risks&quot;
+            ]
+          }
+        },
+        &quot;workflow_pattern&quot;: [
+          &quot;실패 명령과 출력을 확인한다.&quot;,
+          &quot;오류를 파일별로 그룹화한다.&quot;,
+          &quot;자동 포맷과 수동 수정을 구분한다.&quot;,
+          &quot;동작 변경 없이 최소 수정한다.&quot;,
+          &quot;동일 명령을 다시 실행한다.&quot;
+        ],
+        &quot;risk_controls&quot;: [
+          &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
+          &quot;검증 없이 완료 처리하지 않는다.&quot;,
+          &quot;예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다.&quot;
+        ],
+        &quot;output_contract&quot;: {
+          &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
+          &quot;required_sections&quot;: [
+            &quot;Root cause&quot;,
+            &quot;What changed&quot;,
+            &quot;Files touched&quot;,
+            &quot;Validation&quot;,
+            &quot;Risks&quot;
+          ]
+        },
+        &quot;prompt_quality&quot;: {
+          &quot;score&quot;: 83,
+          &quot;dimensions&quot;: {
+            &quot;intent_clarity&quot;: 90,
+            &quot;input_specificity&quot;: 55,
+            &quot;constraint_clarity&quot;: 75,
+            &quot;workflow_reusability&quot;: 90,
+            &quot;verification_strength&quot;: 100,
+            &quot;output_specificity&quot;: 85,
+            &quot;generalization_safety&quot;: 88
+          },
+          &quot;diagnostics&quot;: [
+            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;
+          ]
+        },
+        &quot;better_prompt_templates&quot;: {
+          &quot;minimal&quot;: &quot;Fix lint and type errors with minimal behavior-changing edits. 대상은 [작업 대상]입니다. 완료 후 원래 실패한 명령을 다시 실행한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Fix lint and type errors with minimal behavior-changing edits.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 원래 실패한 명령을 다시 실행한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Root cause, What changed, Files touched, Validation, Risks&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `fix` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+        },
+        &quot;clarifying_questions&quot;: [
+          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
+          &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
+        ],
+        &quot;quality_checklist&quot;: [
+          &quot;목표가 한 문장으로 명확한가?&quot;,
+          &quot;작업 대상 또는 입력 자료가 명시됐는가?&quot;,
+          &quot;수정 범위와 하지 말아야 할 일이 분리됐는가?&quot;,
+          &quot;반복 가능한 절차가 순서대로 정의됐는가?&quot;,
+          &quot;검증 방법과 완료 기준이 포함됐는가?&quot;,
+          &quot;결과 출력 형식이 정해졌는가?&quot;,
+          &quot;특정 파일명/브랜치/고객명에 과적합되지 않았는가?&quot;
+        ],
+        &quot;generalization_notes&quot;: [
+          &quot;예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.&quot;,
+          &quot;특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.&quot;,
+          &quot;한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다.&quot;,
+          &quot;수정형 Skill은 원인 분석과 검증 명령을 항상 포함해야 한다.&quot;
+        ]
+      }
+    },
+    {
+      &quot;name&quot;: &quot;repo-to-infographic&quot;,
+      &quot;title&quot;: &quot;Repository to Infographic Planner&quot;,
+      &quot;description&quot;: &quot;Use when the user asks to analyze a GitHub repository and create a concise 16:9 infographic brief or image-generation prompt.&quot;,
+      &quot;score&quot;: 100,
+      &quot;frequency_total&quot;: 10,
+      &quot;example_prompts&quot;: [
+        &quot;GitHub 저장소 분석해서 16:9 인포그래픽 이미지 프롬프트 만들어줘&quot;,
+        &quot;레포 분석 후 상세하고 간략한 스타일 적용 인포그래픽 설계&quot;
+      ],
+      &quot;when_to_use&quot;: [
+        &quot;GitHub 저장소를 분석해 인포그래픽을 만들 때&quot;,
+        &quot;16:9 요약 이미지 프롬프트가 필요할 때&quot;
+      ],
+      &quot;when_not_to_use&quot;: [
+        &quot;코드 수정이나 테스트 실행이 중심인 개발 작업&quot;
+      ],
+      &quot;goal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan.&quot;,
+      &quot;workflow&quot;: [
+        &quot;README와 주요 구조를 확인한다.&quot;,
+        &quot;목적, 기능, 파이프라인, 기술 스택, 출력 결과를 추출한다.&quot;,
+        &quot;5개 이하의 섹션으로 정리한다.&quot;,
+        &quot;16:9 이미지에 맞는 레이아웃과 스타일 지시를 작성한다.&quot;
+      ],
+      &quot;verification&quot;: [
+        &quot;README에서 확인한 사실만 핵심 수치로 사용한다.&quot;,
+        &quot;텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다.&quot;
+      ],
+      &quot;anti_patterns&quot;: [
+        &quot;확인하지 않은 수치를 추가하지 않는다.&quot;,
+        &quot;참조 이미지의 주제까지 복사하지 않는다.&quot;
+      ],
+      &quot;status&quot;: &quot;pending_review&quot;,
+      &quot;source&quot;: &quot;rule&quot;,
+      &quot;skill_spec&quot;: {
+        &quot;schema_version&quot;: &quot;1.0&quot;,
+        &quot;task_archetype&quot;: &quot;create&quot;,
+        &quot;intent_invariant&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan.&quot;,
+        &quot;top_terms&quot;: [
+          &quot;repository&quot;,
+          &quot;infographic&quot;,
+          &quot;github&quot;,
+          &quot;인포그래픽&quot;,
+          &quot;이미지&quot;,
+          &quot;스타일&quot;
+        ],
+        &quot;variable_slots&quot;: [
+          {
+            &quot;name&quot;: &quot;target&quot;,
+            &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;constraints&quot;,
+            &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
+            &quot;required&quot;: false,
+            &quot;evidence&quot;: [
+              &quot;확인하지 않은 수치를 추가하지 않는다.&quot;,
+              &quot;참조 이미지의 주제까지 복사하지 않는다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;verification&quot;,
+            &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;README에서 확인한 사실만 핵심 수치로 사용한다.&quot;,
+              &quot;텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;output_format&quot;,
+            &quot;description&quot;: &quot;결과 응답에 포함해야 할 섹션과 형식&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[출력 형식]&quot;
+          }
+        ],
+        &quot;preconditions&quot;: [
+          &quot;작업 대상 또는 입력 자료가 명확해야 한다.&quot;,
+          &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
+        ],
+        &quot;prompt_contract&quot;: {
+          &quot;intent&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan.&quot;,
+          &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+          &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
+          &quot;constraints&quot;: [
+            &quot;확인하지 않은 수치를 추가하지 않는다.&quot;,
+            &quot;참조 이미지의 주제까지 복사하지 않는다.&quot;
+          ],
+          &quot;workflow&quot;: [
+            &quot;README와 주요 구조를 확인한다.&quot;,
+            &quot;목적, 기능, 파이프라인, 기술 스택, 출력 결과를 추출한다.&quot;,
+            &quot;5개 이하의 섹션으로 정리한다.&quot;,
+            &quot;16:9 이미지에 맞는 레이아웃과 스타일 지시를 작성한다.&quot;
+          ],
+          &quot;verification&quot;: [
+            &quot;README에서 확인한 사실만 핵심 수치로 사용한다.&quot;,
+            &quot;텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다.&quot;
+          ],
+          &quot;output&quot;: {
+            &quot;format&quot;: &quot;structured_summary&quot;,
+            &quot;required_sections&quot;: [
+              &quot;Summary&quot;,
+              &quot;Inputs&quot;,
+              &quot;Actions&quot;,
+              &quot;Validation&quot;,
+              &quot;Risks or follow-ups&quot;
+            ]
+          }
+        },
+        &quot;workflow_pattern&quot;: [
+          &quot;README와 주요 구조를 확인한다.&quot;,
+          &quot;목적, 기능, 파이프라인, 기술 스택, 출력 결과를 추출한다.&quot;,
+          &quot;5개 이하의 섹션으로 정리한다.&quot;,
+          &quot;16:9 이미지에 맞는 레이아웃과 스타일 지시를 작성한다.&quot;
+        ],
+        &quot;risk_controls&quot;: [
+          &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
+          &quot;검증 없이 완료 처리하지 않는다.&quot;,
+          &quot;예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다.&quot;
+        ],
+        &quot;output_contract&quot;: {
+          &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
+          &quot;required_sections&quot;: [
+            &quot;Summary&quot;,
+            &quot;Inputs&quot;,
+            &quot;Actions&quot;,
+            &quot;Validation&quot;,
+            &quot;Risks or follow-ups&quot;
+          ]
+        },
+        &quot;prompt_quality&quot;: {
+          &quot;score&quot;: 78,
+          &quot;dimensions&quot;: {
+            &quot;intent_clarity&quot;: 90,
+            &quot;input_specificity&quot;: 55,
+            &quot;constraint_clarity&quot;: 75,
+            &quot;workflow_reusability&quot;: 80,
+            &quot;verification_strength&quot;: 70,
+            &quot;output_specificity&quot;: 85,
+            &quot;generalization_safety&quot;: 88
+          },
+          &quot;diagnostics&quot;: [
+            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;
+          ]
+        },
+        &quot;better_prompt_templates&quot;: {
+          &quot;minimal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Summary, Inputs, Actions, Validation, Risks or follow-ups&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `create` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+        },
+        &quot;clarifying_questions&quot;: [
+          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
+          &quot;완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?&quot;,
+          &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
+        ],
+        &quot;quality_checklist&quot;: [
+          &quot;목표가 한 문장으로 명확한가?&quot;,
+          &quot;작업 대상 또는 입력 자료가 명시됐는가?&quot;,
+          &quot;수정 범위와 하지 말아야 할 일이 분리됐는가?&quot;,
+          &quot;반복 가능한 절차가 순서대로 정의됐는가?&quot;,
+          &quot;검증 방법과 완료 기준이 포함됐는가?&quot;,
+          &quot;결과 출력 형식이 정해졌는가?&quot;,
+          &quot;특정 파일명/브랜치/고객명에 과적합되지 않았는가?&quot;
+        ],
+        &quot;generalization_notes&quot;: [
+          &quot;예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.&quot;,
+          &quot;특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.&quot;,
+          &quot;한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다.&quot;
+        ]
+      }
+    },
+    {
+      &quot;name&quot;: &quot;review-current-diff&quot;,
+      &quot;title&quot;: &quot;Current Diff Reviewer&quot;,
+      &quot;description&quot;: &quot;Use when the user asks to review the current git diff, PR changes, code changes, or wants risk and bug analysis before committing.&quot;,
+      &quot;score&quot;: 100,
+      &quot;frequency_total&quot;: 20,
+      &quot;example_prompts&quot;: [
+        &quot;현재 diff 리뷰하고 PR 전 위험 검토해줘&quot;,
+        &quot;review this current git diff before merge&quot;,
+        &quot;변경사항 검토하고 누락 테스트와 회귀 위험 찾아줘&quot;,
+        &quot;PR 리뷰 관점으로 코드 리뷰 진행해줘&quot;
+      ],
+      &quot;when_to_use&quot;: [
+        &quot;현재 git diff 리뷰를 요청할 때&quot;,
+        &quot;PR 전 리스크 점검을 요청할 때&quot;
+      ],
+      &quot;when_not_to_use&quot;: [
+        &quot;코드 구현 자체를 요청하는 경우&quot;
+      ],
+      &quot;goal&quot;: &quot;Review the current changes for correctness, risk, maintainability, and missing tests.&quot;,
+      &quot;workflow&quot;: [
+        &quot;현재 git diff를 확인한다.&quot;,
+        &quot;변경 의도를 추론한다.&quot;,
+        &quot;버그 가능성, 회귀 위험, 누락 테스트를 찾는다.&quot;,
+        &quot;중요도 높은 피드백부터 제시한다.&quot;
+      ],
+      &quot;verification&quot;: [
+        &quot;diff 근거로만 리뷰한다.&quot;
+      ],
+      &quot;anti_patterns&quot;: [
+        &quot;사소한 스타일만 과도하게 지적하지 않는다.&quot;
+      ],
+      &quot;status&quot;: &quot;pending_review&quot;,
+      &quot;source&quot;: &quot;rule&quot;,
+      &quot;skill_spec&quot;: {
+        &quot;schema_version&quot;: &quot;1.0&quot;,
+        &quot;task_archetype&quot;: &quot;review&quot;,
+        &quot;intent_invariant&quot;: &quot;Review the current changes for correctness, risk, maintainability, and missing tests.&quot;,
+        &quot;top_terms&quot;: [
+          &quot;diff&quot;,
+          &quot;current&quot;,
+          &quot;git&quot;,
+          &quot;review&quot;,
+          &quot;changes&quot;,
+          &quot;현재&quot;
+        ],
+        &quot;variable_slots&quot;: [
+          {
+            &quot;name&quot;: &quot;target&quot;,
+            &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;constraints&quot;,
+            &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
+            &quot;required&quot;: false,
+            &quot;evidence&quot;: [
+              &quot;사소한 스타일만 과도하게 지적하지 않는다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;verification&quot;,
+            &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;diff 근거로만 리뷰한다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;output_format&quot;,
+            &quot;description&quot;: &quot;결과 응답에 포함해야 할 섹션과 형식&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[출력 형식]&quot;
+          }
+        ],
+        &quot;preconditions&quot;: [
+          &quot;작업 대상 또는 입력 자료가 명확해야 한다.&quot;,
+          &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
+        ],
+        &quot;prompt_contract&quot;: {
+          &quot;intent&quot;: &quot;Review the current changes for correctness, risk, maintainability, and missing tests.&quot;,
+          &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+          &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
+          &quot;constraints&quot;: [
+            &quot;사소한 스타일만 과도하게 지적하지 않는다.&quot;
+          ],
+          &quot;workflow&quot;: [
+            &quot;현재 git diff를 확인한다.&quot;,
+            &quot;변경 의도를 추론한다.&quot;,
+            &quot;버그 가능성, 회귀 위험, 누락 테스트를 찾는다.&quot;,
+            &quot;중요도 높은 피드백부터 제시한다.&quot;
+          ],
+          &quot;verification&quot;: [
+            &quot;diff 근거로만 리뷰한다.&quot;
+          ],
+          &quot;output&quot;: {
+            &quot;format&quot;: &quot;structured_summary&quot;,
+            &quot;required_sections&quot;: [
+              &quot;Findings&quot;,
+              &quot;Evidence&quot;,
+              &quot;Risk level&quot;,
+              &quot;Suggested fixes&quot;,
+              &quot;Missing tests&quot;
+            ]
+          }
+        },
+        &quot;workflow_pattern&quot;: [
+          &quot;현재 git diff를 확인한다.&quot;,
+          &quot;변경 의도를 추론한다.&quot;,
+          &quot;버그 가능성, 회귀 위험, 누락 테스트를 찾는다.&quot;,
+          &quot;중요도 높은 피드백부터 제시한다.&quot;
+        ],
+        &quot;risk_controls&quot;: [
+          &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
+          &quot;검증 없이 완료 처리하지 않는다.&quot;,
+          &quot;예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다.&quot;
+        ],
+        &quot;output_contract&quot;: {
+          &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
+          &quot;required_sections&quot;: [
+            &quot;Findings&quot;,
+            &quot;Evidence&quot;,
+            &quot;Risk level&quot;,
+            &quot;Suggested fixes&quot;,
+            &quot;Missing tests&quot;
+          ]
+        },
+        &quot;prompt_quality&quot;: {
+          &quot;score&quot;: 73,
+          &quot;dimensions&quot;: {
+            &quot;intent_clarity&quot;: 90,
+            &quot;input_specificity&quot;: 55,
+            &quot;constraint_clarity&quot;: 60,
+            &quot;workflow_reusability&quot;: 80,
+            &quot;verification_strength&quot;: 55,
+            &quot;output_specificity&quot;: 85,
+            &quot;generalization_safety&quot;: 88
+          },
+          &quot;diagnostics&quot;: [
+            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;,
+            &quot;수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.&quot;,
+            &quot;검증 기준이나 실행 명령이 부족합니다.&quot;
+          ]
+        },
+        &quot;better_prompt_templates&quot;: {
+          &quot;minimal&quot;: &quot;Review the current changes for correctness, risk, maintainability, and missing tests. 대상은 [작업 대상]입니다. 완료 후 diff 근거로만 리뷰한다. 기준으로 확인하고 Findings, Evidence, Risk level, Suggested fixes, Missing tests 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Review the current changes for correctness, risk, maintainability, and missing tests.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. diff 근거로만 리뷰한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Findings, Evidence, Risk level, Suggested fixes, Missing tests&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `review` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+        },
+        &quot;clarifying_questions&quot;: [
+          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
+          &quot;반드시 지켜야 할 범위, 금지사항, 스타일 또는 호환성 조건이 있나요?&quot;,
+          &quot;완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?&quot;,
+          &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
+        ],
+        &quot;quality_checklist&quot;: [
+          &quot;목표가 한 문장으로 명확한가?&quot;,
+          &quot;작업 대상 또는 입력 자료가 명시됐는가?&quot;,
+          &quot;수정 범위와 하지 말아야 할 일이 분리됐는가?&quot;,
+          &quot;반복 가능한 절차가 순서대로 정의됐는가?&quot;,
+          &quot;검증 방법과 완료 기준이 포함됐는가?&quot;,
+          &quot;결과 출력 형식이 정해졌는가?&quot;,
+          &quot;특정 파일명/브랜치/고객명에 과적합되지 않았는가?&quot;
+        ],
+        &quot;generalization_notes&quot;: [
+          &quot;예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.&quot;,
+          &quot;특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.&quot;,
+          &quot;한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다.&quot;
+        ]
+      }
+    },
+    {
+      &quot;name&quot;: &quot;update-docs&quot;,
+      &quot;title&quot;: &quot;Documentation Updater&quot;,
+      &quot;description&quot;: &quot;Use when the user asks to update README, docs, API documentation, usage guides, or changelog-like documentation.&quot;,
+      &quot;score&quot;: 100,
+      &quot;frequency_total&quot;: 15,
+      &quot;example_prompts&quot;: [
+        &quot;README 문서 업데이트하고 사용법 가이드 정리해줘&quot;,
+        &quot;docs documentation 사용법을 README에 추가하고 changelog 정리&quot;,
+        &quot;문서 설명 추가하고 설치 실행 예시를 최신 상태로 맞춰줘&quot;
+      ],
+      &quot;when_to_use&quot;: [
+        &quot;README 업데이트를 요청할 때&quot;,
+        &quot;사용법, API 문서, 개발 가이드 작성이 필요할 때&quot;
+      ],
+      &quot;when_not_to_use&quot;: [
+        &quot;코드 구현이 중심인 요청&quot;
+      ],
+      &quot;goal&quot;: &quot;Update documentation so it accurately reflects the current project behavior.&quot;,
+      &quot;workflow&quot;: [
+        &quot;관련 코드와 기존 문서를 확인한다.&quot;,
+        &quot;독자와 목적을 판단한다.&quot;,
+        &quot;설치, 설정, 실행, 예시를 필요한 만큼 추가한다.&quot;,
+        &quot;낡은 내용을 제거한다.&quot;,
+        &quot;명령어와 경로를 검증한다.&quot;
+      ],
+      &quot;verification&quot;: [
+        &quot;문서 명령어가 현재 구조와 맞는지 확인한다.&quot;
+      ],
+      &quot;anti_patterns&quot;: [
+        &quot;확인하지 않은 기능을 문서에 적지 않는다.&quot;
+      ],
+      &quot;status&quot;: &quot;pending_review&quot;,
+      &quot;source&quot;: &quot;rule&quot;,
+      &quot;skill_spec&quot;: {
+        &quot;schema_version&quot;: &quot;1.0&quot;,
+        &quot;task_archetype&quot;: &quot;document&quot;,
+        &quot;intent_invariant&quot;: &quot;Update documentation so it accurately reflects the current project behavior.&quot;,
+        &quot;top_terms&quot;: [
+          &quot;documentation&quot;,
+          &quot;readme&quot;,
+          &quot;문서&quot;,
+          &quot;update&quot;,
+          &quot;docs&quot;,
+          &quot;api&quot;
+        ],
+        &quot;variable_slots&quot;: [
+          {
+            &quot;name&quot;: &quot;target&quot;,
+            &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;constraints&quot;,
+            &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
+            &quot;required&quot;: false,
+            &quot;evidence&quot;: [
+              &quot;확인하지 않은 기능을 문서에 적지 않는다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;verification&quot;,
+            &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;문서 명령어가 현재 구조와 맞는지 확인한다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;output_format&quot;,
+            &quot;description&quot;: &quot;결과 응답에 포함해야 할 섹션과 형식&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[출력 형식]&quot;
+          }
+        ],
+        &quot;preconditions&quot;: [
+          &quot;작업 대상 또는 입력 자료가 명확해야 한다.&quot;,
+          &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
+        ],
+        &quot;prompt_contract&quot;: {
+          &quot;intent&quot;: &quot;Update documentation so it accurately reflects the current project behavior.&quot;,
+          &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+          &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
+          &quot;constraints&quot;: [
+            &quot;확인하지 않은 기능을 문서에 적지 않는다.&quot;
+          ],
+          &quot;workflow&quot;: [
+            &quot;관련 코드와 기존 문서를 확인한다.&quot;,
+            &quot;독자와 목적을 판단한다.&quot;,
+            &quot;설치, 설정, 실행, 예시를 필요한 만큼 추가한다.&quot;,
+            &quot;낡은 내용을 제거한다.&quot;,
+            &quot;명령어와 경로를 검증한다.&quot;
+          ],
+          &quot;verification&quot;: [
+            &quot;문서 명령어가 현재 구조와 맞는지 확인한다.&quot;
+          ],
+          &quot;output&quot;: {
+            &quot;format&quot;: &quot;structured_summary&quot;,
+            &quot;required_sections&quot;: [
+              &quot;Audience&quot;,
+              &quot;Updated sections&quot;,
+              &quot;Examples&quot;,
+              &quot;Validation&quot;,
+              &quot;Follow-ups&quot;
+            ]
+          }
+        },
+        &quot;workflow_pattern&quot;: [
+          &quot;관련 코드와 기존 문서를 확인한다.&quot;,
+          &quot;독자와 목적을 판단한다.&quot;,
+          &quot;설치, 설정, 실행, 예시를 필요한 만큼 추가한다.&quot;,
+          &quot;낡은 내용을 제거한다.&quot;,
+          &quot;명령어와 경로를 검증한다.&quot;
+        ],
+        &quot;risk_controls&quot;: [
+          &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
+          &quot;검증 없이 완료 처리하지 않는다.&quot;,
+          &quot;예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다.&quot;
+        ],
+        &quot;output_contract&quot;: {
+          &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
+          &quot;required_sections&quot;: [
+            &quot;Audience&quot;,
+            &quot;Updated sections&quot;,
+            &quot;Examples&quot;,
+            &quot;Validation&quot;,
+            &quot;Follow-ups&quot;
+          ]
+        },
+        &quot;prompt_quality&quot;: {
+          &quot;score&quot;: 75,
+          &quot;dimensions&quot;: {
+            &quot;intent_clarity&quot;: 90,
+            &quot;input_specificity&quot;: 55,
+            &quot;constraint_clarity&quot;: 60,
+            &quot;workflow_reusability&quot;: 90,
+            &quot;verification_strength&quot;: 55,
+            &quot;output_specificity&quot;: 85,
+            &quot;generalization_safety&quot;: 88
+          },
+          &quot;diagnostics&quot;: [
+            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;,
+            &quot;수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.&quot;,
+            &quot;검증 기준이나 실행 명령이 부족합니다.&quot;
+          ]
+        },
+        &quot;better_prompt_templates&quot;: {
+          &quot;minimal&quot;: &quot;Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Update documentation so it accurately reflects the current project behavior.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Audience, Updated sections, Examples, Validation, Follow-ups&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `document` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+        },
+        &quot;clarifying_questions&quot;: [
+          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
+          &quot;반드시 지켜야 할 범위, 금지사항, 스타일 또는 호환성 조건이 있나요?&quot;,
+          &quot;완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?&quot;,
+          &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
+        ],
+        &quot;quality_checklist&quot;: [
+          &quot;목표가 한 문장으로 명확한가?&quot;,
+          &quot;작업 대상 또는 입력 자료가 명시됐는가?&quot;,
+          &quot;수정 범위와 하지 말아야 할 일이 분리됐는가?&quot;,
+          &quot;반복 가능한 절차가 순서대로 정의됐는가?&quot;,
+          &quot;검증 방법과 완료 기준이 포함됐는가?&quot;,
+          &quot;결과 출력 형식이 정해졌는가?&quot;,
+          &quot;특정 파일명/브랜치/고객명에 과적합되지 않았는가?&quot;
+        ],
+        &quot;generalization_notes&quot;: [
+          &quot;예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.&quot;,
+          &quot;특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.&quot;,
+          &quot;한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다.&quot;
+        ]
+      }
+    },
+    {
+      &quot;name&quot;: &quot;similar-release-notes-changes&quot;,
+      &quot;title&quot;: &quot;Similar Prompt Cluster: release, notes, changes&quot;,
+      &quot;description&quot;: &quot;Use when the user repeatedly asks semantically similar requests represented by this prompt cluster (10 examples).&quot;,
+      &quot;score&quot;: 100,
+      &quot;frequency_total&quot;: 10,
+      &quot;example_prompts&quot;: [
+        &quot;prepare release notes from current commits and summarize notable changes&quot;,
+        &quot;generate release summary from git commits with breaking changes and migration notes&quot;,
+        &quot;write a release announcement from merged commits and categorize changes&quot;,
+        &quot;make version release notes based on commit history and user visible changes&quot;,
+        &quot;draft release communication using commit messages and upgrade notes&quot;
+      ],
+      &quot;when_to_use&quot;: [
+        &quot;유사한 프롬프트가 반복되어 절차화된 Skill 후보가 필요할 때&quot;,
+        &quot;키워드 규칙으로는 잡히지 않지만 의미상 같은 작업이 반복될 때&quot;
+      ],
+      &quot;when_not_to_use&quot;: [
+        &quot;예시 프롬프트들이 서로 다른 목표를 갖는 경우&quot;,
+        &quot;한 저장소나 특정 고객명에만 강하게 의존하는 경우&quot;
+      ],
+      &quot;goal&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.&quot;,
+      &quot;workflow&quot;: [
+        &quot;대표 예시 프롬프트들을 검토한다.&quot;,
+        &quot;공통 목표와 반복 절차를 추출한다.&quot;,
+        &quot;프로젝트 고유 정보나 민감정보를 제거한다.&quot;,
+        &quot;검증 방법과 금지 사항을 명확히 작성한다.&quot;,
+        &quot;생성 전 사람이 후보를 승인한다.&quot;
+      ],
+      &quot;verification&quot;: [
+        &quot;예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.&quot;,
+        &quot;생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.&quot;
+      ],
+      &quot;anti_patterns&quot;: [
+        &quot;유사도 점수만 보고 자동 생성하지 않는다.&quot;,
+        &quot;서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.&quot;
+      ],
+      &quot;status&quot;: &quot;pending_review&quot;,
+      &quot;source&quot;: &quot;similarity&quot;,
+      &quot;similarity&quot;: {
+        &quot;cluster_id&quot;: &quot;similar-8c5c8e33&quot;,
+        &quot;average_similarity&quot;: 0.2868,
+        &quot;threshold&quot;: 0.18,
+        &quot;top_terms&quot;: [
+          &quot;release&quot;,
+          &quot;notes&quot;,
+          &quot;changes&quot;,
+          &quot;from&quot;
+        ]
+      },
+      &quot;skill_spec&quot;: {
+        &quot;schema_version&quot;: &quot;1.0&quot;,
+        &quot;task_archetype&quot;: &quot;create&quot;,
+        &quot;intent_invariant&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.&quot;,
+        &quot;top_terms&quot;: [
+          &quot;release&quot;,
+          &quot;notes&quot;,
+          &quot;changes&quot;,
+          &quot;skill&quot;,
+          &quot;prompt&quot;,
+          &quot;from&quot;
+        ],
+        &quot;variable_slots&quot;: [
+          {
+            &quot;name&quot;: &quot;target&quot;,
+            &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;constraints&quot;,
+            &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
+            &quot;required&quot;: false,
+            &quot;evidence&quot;: [
+              &quot;유사도 점수만 보고 자동 생성하지 않는다.&quot;,
+              &quot;서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;verification&quot;,
+            &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [
+              &quot;예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.&quot;,
+              &quot;생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.&quot;
+            ],
+            &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
+          },
+          {
+            &quot;name&quot;: &quot;output_format&quot;,
+            &quot;description&quot;: &quot;결과 응답에 포함해야 할 섹션과 형식&quot;,
+            &quot;required&quot;: true,
+            &quot;evidence&quot;: [],
+            &quot;default_placeholder&quot;: &quot;[출력 형식]&quot;
+          }
+        ],
+        &quot;preconditions&quot;: [
+          &quot;작업 대상 또는 입력 자료가 명확해야 한다.&quot;,
+          &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
+        ],
+        &quot;prompt_contract&quot;: {
+          &quot;intent&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.&quot;,
+          &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
+          &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
+          &quot;constraints&quot;: [
+            &quot;유사도 점수만 보고 자동 생성하지 않는다.&quot;,
+            &quot;서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.&quot;
+          ],
+          &quot;workflow&quot;: [
+            &quot;대표 예시 프롬프트들을 검토한다.&quot;,
+            &quot;공통 목표와 반복 절차를 추출한다.&quot;,
+            &quot;프로젝트 고유 정보나 민감정보를 제거한다.&quot;,
+            &quot;검증 방법과 금지 사항을 명확히 작성한다.&quot;,
+            &quot;생성 전 사람이 후보를 승인한다.&quot;
+          ],
+          &quot;verification&quot;: [
+            &quot;예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.&quot;,
+            &quot;생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.&quot;
+          ],
+          &quot;output&quot;: {
+            &quot;format&quot;: &quot;structured_summary&quot;,
+            &quot;required_sections&quot;: [
+              &quot;Summary&quot;,
+              &quot;Inputs&quot;,
+              &quot;Actions&quot;,
+              &quot;Validation&quot;,
+              &quot;Risks or follow-ups&quot;
+            ]
+          }
+        },
+        &quot;workflow_pattern&quot;: [
+          &quot;대표 예시 프롬프트들을 검토한다.&quot;,
+          &quot;공통 목표와 반복 절차를 추출한다.&quot;,
+          &quot;프로젝트 고유 정보나 민감정보를 제거한다.&quot;,
+          &quot;검증 방법과 금지 사항을 명확히 작성한다.&quot;,
+          &quot;생성 전 사람이 후보를 승인한다.&quot;
+        ],
+        &quot;risk_controls&quot;: [
+          &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
+          &quot;검증 없이 완료 처리하지 않는다.&quot;,
+          &quot;예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다.&quot;
+        ],
+        &quot;output_contract&quot;: {
+          &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
+          &quot;required_sections&quot;: [
+            &quot;Summary&quot;,
+            &quot;Inputs&quot;,
+            &quot;Actions&quot;,
+            &quot;Validation&quot;,
+            &quot;Risks or follow-ups&quot;
+          ]
+        },
+        &quot;prompt_quality&quot;: {
+          &quot;score&quot;: 79,
+          &quot;dimensions&quot;: {
+            &quot;intent_clarity&quot;: 90,
+            &quot;input_specificity&quot;: 55,
+            &quot;constraint_clarity&quot;: 75,
+            &quot;workflow_reusability&quot;: 90,
+            &quot;verification_strength&quot;: 70,
+            &quot;output_specificity&quot;: 85,
+            &quot;generalization_safety&quot;: 88
+          },
+          &quot;diagnostics&quot;: [
+            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;
+          ]
+        },
+        &quot;better_prompt_templates&quot;: {
+          &quot;minimal&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill. 대상은 [작업 대상]입니다. 완료 후 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Summary, Inputs, Actions, Validation, Risks or follow-ups&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `create` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+        },
+        &quot;clarifying_questions&quot;: [
+          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
+          &quot;완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?&quot;,
+          &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
+        ],
+        &quot;quality_checklist&quot;: [
+          &quot;목표가 한 문장으로 명확한가?&quot;,
+          &quot;작업 대상 또는 입력 자료가 명시됐는가?&quot;,
+          &quot;수정 범위와 하지 말아야 할 일이 분리됐는가?&quot;,
+          &quot;반복 가능한 절차가 순서대로 정의됐는가?&quot;,
+          &quot;검증 방법과 완료 기준이 포함됐는가?&quot;,
+          &quot;결과 출력 형식이 정해졌는가?&quot;,
+          &quot;특정 파일명/브랜치/고객명에 과적합되지 않았는가?&quot;
+        ],
+        &quot;generalization_notes&quot;: [
+          &quot;예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.&quot;,
+          &quot;특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.&quot;,
+          &quot;한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다.&quot;
+        ]
+      }
+    }
+  ],
+  &quot;commands&quot;: {
+    &quot;inbox&quot;: &quot;codex-skill-factory inbox --repo . --no-interactive&quot;,
+    &quot;promote&quot;: &quot;codex-skill-factory promote &lt;candidate&gt; --repo . --yes&quot;,
+    &quot;analytics&quot;: &quot;codex-skill-factory analytics --repo .&quot;,
+    &quot;dashboard&quot;: &quot;codex-skill-factory dashboard --repo .&quot;
+  }
+}</pre>
+  </section>
+</main>
+</body>
+</html>
