@@ -1,7 +1,5 @@
 <div align="center">
 
-<img width="2752" height="1536" alt="Codex Skill Factory 5단계 프로세스" src="https://github.com/user-attachments/assets/7454245f-08a6-42ef-bd1a-036127175cc9" />
-
 # 🛠️ Codex Prompt Skill Factory
 
 **누구나 설치해서 Codex 프롬프트 사용 패턴을 로컬에서 수집·분석하고,  
