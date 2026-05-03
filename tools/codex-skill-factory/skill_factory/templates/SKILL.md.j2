@@ -1,0 +1,131 @@
+---
+name: {{ candidate.name }}
+description: {{ candidate.description }}
+---
+
+# {{ candidate.title }}
+
+## When to use
+
+{% for item in candidate.when_to_use -%}
+- {{ item }}
+{% endfor %}
+
+## When not to use
+
+{% for item in candidate.when_not_to_use -%}
+- {{ item }}
+{% endfor %}
+
+## Goal
+
+{{ candidate.goal }}
+
+## Workflow
+
+{% for item in candidate.workflow -%}
+{{ loop.index }}. {{ item }}
+{% endfor %}
+
+## Verification
+
+{% for item in candidate.verification -%}
+- {{ item }}
+{% endfor %}
+
+## Do not
+
+{% for item in candidate.anti_patterns -%}
+- {{ item }}
+{% endfor %}
+
+## Output format
+
+- What changed
+- Files touched
+- Commands run
+- Validation result
+- Risks or follow-ups
+{% if include_enriched and has_skill_spec %}
+
+## Prompt quality guide
+
+A good prompt for this skill should include:
+
+- Goal: {{ skill_spec.prompt_contract.intent }}
+- Target/input: {{ skill_spec.prompt_contract.input }}
+- Constraints: scope limits, non-goals, style, and compatibility requirements
+- Workflow: a repeatable step-by-step process
+- Verification: {{ skill_spec.prompt_contract.verification | join('; ') }}
+- Output: {{ skill_spec.output_contract.required_sections | join(', ') }}
+
+### Task contract
+
+- Archetype: `{{ skill_spec.task_archetype }}`
+- Intent invariant: {{ skill_spec.intent_invariant }}
+
+### Variable slots
+
+{% for slot in skill_spec.variable_slots -%}
+- `{{ slot.name }}`{% if slot.required %} (required){% endif %}: {{ slot.description }} → {{ slot.default_placeholder }}
+{% endfor %}
+
+## Better prompt templates
+
+### Minimal
+
+```text
+{{ skill_spec.better_prompt_templates.minimal }}
+```
+
+### High-signal
+
+```text
+{{ skill_spec.better_prompt_templates.high_signal }}
+```
+
+### Clarifying
+
+```text
+{{ skill_spec.better_prompt_templates.clarifying }}
+```
+
+## Ask when unclear
+
+{% for item in skill_spec.clarifying_questions -%}
+- {{ item }}
+{% endfor %}
+
+## Quality checklist
+
+{% for item in skill_spec.quality_checklist -%}
+- {{ item }}
+{% endfor %}
+
+## Generalization notes
+
+{% for item in skill_spec.generalization_notes -%}
+- {{ item }}
+{% endfor %}
+
+## Prompt quality score
+
+- Overall: {{ skill_spec.prompt_quality.score }}
+{% for name, value in skill_spec.prompt_quality.dimensions.items() -%}
+- {{ name }}: {{ value }}
+{% endfor %}
+
+### Diagnostics
+
+{% for item in skill_spec.prompt_quality.diagnostics -%}
+- {{ item }}
+{% endfor %}
+{% endif %}
+{% if include_evidence %}
+
+## Evidence
+
+{% for item in candidate.example_prompts -%}
+- {{ item }}
+{% endfor %}
+{% endif %}

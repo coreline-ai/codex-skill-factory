@@ -1,0 +1,19 @@
+.codex-prompt-history/
+.codex-skill-suggestions/
+.codex/skills/*/
+!.codex/skills/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Local OS/editor noise
+.DS_Store
+
+# Packaging/build artifacts
+build/
+dist/
+*.egg-info/

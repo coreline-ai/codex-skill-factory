@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Codex Skill Factory: Inbox",
+      "type": "shell",
+      "command": "codex-skill-factory inbox --repo . --no-interactive",
+      "problemMatcher": []
+    },
+    {
+      "label": "Codex Skill Factory: Analytics",
+      "type": "shell",
+      "command": "codex-skill-factory analytics --repo .",
+      "problemMatcher": []
+    },
+    {
+      "label": "Codex Skill Factory: Dashboard",
+      "type": "shell",
+      "command": "codex-skill-factory dashboard --repo .",
+      "problemMatcher": []
+    },
+    {
+      "label": "Codex Skill Factory: Open Dashboard",
+      "type": "shell",
+      "command": "python3 -m webbrowser .codex-skill-suggestions/dashboard.html",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codex-skill-factory"
+version = "0.1.0"
+description = "Analyze Codex prompt logs and create approved reusable Codex skills."
+requires-python = ">=3.11"
+dependencies = [
+  "typer>=0.12.0",
+  "rich>=13.7.0",
+  "jinja2>=3.1.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0.0",
+  "ruff>=0.6.0"
+]
+
+[project.scripts]
+codex-skill-factory = "skill_factory.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["skill_factory*"]
+
+[tool.setuptools.package-data]
+skill_factory = ["templates/*.j2"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,37 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codex-skill-factory hook-user-prompt --project",
+            "statusMessage": "Logging Codex prompt"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codex-skill-factory hook-turn-stop --project",
+            "statusMessage": "Logging Codex turn"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codex-skill-factory hook-post-tool-use --project",
+            "statusMessage": "Logging Codex tool use"
+          }
+        ]
+      }
+    ]
+  }
+}
