@@ -5,9 +5,10 @@
 
 ## 읽는 순서
 
-1. [`codex_prompt_skill_factory_dev_doc.md`](codex_prompt_skill_factory_dev_doc.md) — 현행 제품 목표, UX, 아키텍처, 테스트 시나리오의 단일 기준 문서
-2. [`codex_prompt_skill_factory_product_plan_expert_review.md`](codex_prompt_skill_factory_product_plan_expert_review.md) — 구현 전 전문가 리뷰와 리스크 잠금 사항
-3. [`../dev-plan/`](../dev-plan/) — 과거 구현/계획 기록. 현행 제품 범위 판단에는 1번 문서를 우선한다.
+1. [`../AGENTS.md`](../AGENTS.md) — AI 에이전트와 개발자가 반드시 따라야 하는 프로젝트 목적/진행 규칙
+2. [`codex_prompt_skill_factory_dev_doc.md`](codex_prompt_skill_factory_dev_doc.md) — 현행 제품 목표, UX, 아키텍처, 테스트 시나리오의 단일 기준 문서
+3. [`codex_prompt_skill_factory_product_plan_expert_review.md`](codex_prompt_skill_factory_product_plan_expert_review.md) — 구현 전 전문가 리뷰와 리스크 잠금 사항
+4. [`../dev-plan/`](../dev-plan/) — 과거 구현/계획 기록. 현행 제품 범위 판단에는 1~2번 문서를 우선한다.
 
 ## 문서 정리 기준
 

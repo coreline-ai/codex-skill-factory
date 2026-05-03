@@ -4,6 +4,7 @@
 
 > **프로젝트 제목:** Codex Prompt Skill Factory  
 > **고정 목적:** 누구나 설치해서 Codex 프롬프트 사용 패턴을 로컬에서 수집·분석하고, 반복 요청을 Skill 후보로 제안하며, 사용자가 승인한 후보를 Codex가 바로 사용할 수 있는 Skill로 자동 생성·설치하는 installable CLI 제품.
+> **작업 강제 규칙:** 모든 에이전트/개발자는 repo root [`AGENTS.md`](../AGENTS.md)를 먼저 따른다.
 
 ## 0. 최종 목표
 
