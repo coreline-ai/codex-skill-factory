@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-03T04:50:28.933701+00:00",
+  "generated_at": "2026-05-03T05:24:33.608053+00:00",
   "summary": {
     "total_prompts": 100,
     "total_turns": 12,
@@ -62,6 +62,13 @@
         "frequency_total": 20
       },
       {
+        "name": "generate-release-notes",
+        "status": "pending_review",
+        "source": "similarity",
+        "score": 100,
+        "frequency_total": 10
+      },
+      {
         "name": "repo-to-infographic",
         "status": "pending_review",
         "source": "rule",
@@ -74,13 +81,6 @@
         "source": "rule",
         "score": 100,
         "frequency_total": 20
-      },
-      {
-        "name": "similar-release-notes-changes",
-        "status": "pending_review",
-        "source": "similarity",
-        "score": 100,
-        "frequency_total": 10
       },
       {
         "name": "update-docs",

@@ -27,12 +27,31 @@ _COMMAND_RE = re.compile(
     r"\b(pytest|npm test|pnpm test|yarn test|ruff check|eslint|mypy|tsc|vitest|jest)[^\n\"']*",
     re.IGNORECASE,
 )
+_INPUT_HINT_RE = re.compile(
+    r"\b(?:current\s+)?(?:git\s+changes|latest\s+diff|diff|commits?|pr\s+list|pull\s+requests?|"
+    r"logs?|trace|stacktrace|screenshot|metrics|csv|table|readme)\b|변경사항|로그|스크린샷",
+    re.IGNORECASE,
+)
 _WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9_\-]{2,}|[가-힣]{2,}")
 
 _ARCHETYPE_KEYWORDS: list[tuple[str, list[str]]] = [
     ("fix", ["fix", "failing", "failure", "broken", "error", "실패", "고쳐", "수정", "해결"]),
     ("review", ["review", "검토", "리뷰", "diff", "pr"]),
-    ("document", ["readme", "docs", "documentation", "문서", "가이드", "changelog", "release note"]),
+    (
+        "document",
+        [
+            "readme",
+            "docs",
+            "documentation",
+            "문서",
+            "가이드",
+            "changelog",
+            "release note",
+            "release notes",
+            "릴리즈 노트",
+            "변경 로그",
+        ],
+    ),
     ("refactor", ["refactor", "리팩터", "리팩토", "구조 개선"]),
     ("investigate", ["investigate", "debug", "root cause", "원인", "분석", "왜"]),
     ("deploy", ["deploy", "release", "ship", "배포", "출시"]),
@@ -109,7 +128,10 @@ _DEFAULT_WORKFLOWS: dict[str, list[str]] = {
 
 _OUTPUT_SECTIONS: dict[str, list[str]] = {
     "fix": ["Root cause", "What changed", "Files touched", "Validation", "Risks"],
+    "create": ["Deliverable", "Inputs used", "Key decisions", "Validation", "Follow-ups"],
     "review": ["Findings", "Evidence", "Risk level", "Suggested fixes", "Missing tests"],
+    "analyze": ["Question", "Evidence", "Findings", "Confidence", "Next actions"],
+    "refactor": ["Goal", "Files changed", "Behavior preserved", "Validation", "Risks"],
     "document": ["Audience", "Updated sections", "Examples", "Validation", "Follow-ups"],
     "deploy": ["Deployment target", "Steps run", "Result", "Validation", "Rollback notes"],
     "investigate": ["Symptoms", "Hypotheses", "Evidence", "Root cause", "Next actions"],
@@ -160,13 +182,14 @@ def extract_variable_slots(candidate: dict[str, Any]) -> list[dict[str, Any]]:
     branches = list(dict.fromkeys(match.group(1) for match in _BRANCH_RE.finditer(text)))
     dates = list(dict.fromkeys(match.group(0) for match in _DATE_RE.finditer(text)))
     commands = list(dict.fromkeys(match.group(0).strip() for match in _COMMAND_RE.finditer(text)))
+    input_hints = list(dict.fromkeys(match.group(0).strip() for match in _INPUT_HINT_RE.finditer(text)))
 
     slots = [
         _slot(
             "target",
             "작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위",
             True,
-            files + urls,
+            files + urls + input_hints,
             "[작업 대상]",
         ),
         _slot(
@@ -225,7 +248,12 @@ def build_prompt_contract(candidate: dict[str, Any], archetype: str, slots: list
     workflow = candidate.get("workflow") if isinstance(candidate.get("workflow"), list) else []
     verification = candidate.get("verification") if isinstance(candidate.get("verification"), list) else []
     constraints = candidate.get("anti_patterns") if isinstance(candidate.get("anti_patterns"), list) else []
-    output_sections = _OUTPUT_SECTIONS.get(archetype, _OUTPUT_SECTIONS["general"])
+    candidate_output_sections = candidate.get("output_sections")
+    output_sections = (
+        [str(item) for item in candidate_output_sections if str(item).strip()]
+        if isinstance(candidate_output_sections, list)
+        else _OUTPUT_SECTIONS.get(archetype, _OUTPUT_SECTIONS["general"])
+    )
     return {
         "intent": candidate.get("goal") or candidate.get("description") or "반복되는 사용자 요청을 안정적으로 처리한다.",
         "input": next((slot["description"] for slot in slots if slot["name"] == "target"), "작업 대상"),

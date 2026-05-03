@@ -49,9 +49,13 @@ description: <one-line># Codex가 trigger 판단에 쓰는 한 줄 트리거 문
 | 5 | `## Workflow` | `candidate.workflow[]` | **숫자 목록** |
 | 6 | `## Verification` | `candidate.verification[]` | 불릿 |
 | 7 | `## Do not` | `candidate.anti_patterns[]` | 불릿 |
-| 8 | `## Output format` | **고정 5항목** (아래) | 불릿 |
+| 8 | `## Output format` | `skill_spec.output_contract.required_sections` 또는 fallback 5항목 | 불릿 |
 
-### 2.3 Output format — 모든 Skill 공통 5항목 (고정)
+### 2.3 Output format — archetype 기반 출력 계약
+
+`enriched=True`이고 `candidate.skill_spec` 이 존재하면 `spec_compiler.py`가 만든 `output_contract.required_sections`를 직접 렌더링한다. 기본은 `task_archetype`별 출력 섹션이며, 유사도 domain profile이 `candidate.output_sections`를 제공하면 해당 domain별 출력 섹션이 우선한다.
+
+`enriched=False` 또는 legacy 후보처럼 `skill_spec`이 없는 경우에만 아래 fallback 5항목을 사용한다.
 
 ```text
 - What changed
@@ -60,8 +64,6 @@ description: <one-line># Codex가 trigger 판단에 쓰는 한 줄 트리거 문
 - Validation result
 - Risks or follow-ups
 ```
-
-> 이 5항목은 archetype과 무관하게 항상 들어갑니다. archetype별 추가 섹션은 §4.B에서 enriched 모드일 때 별도로 첨부됩니다.
 
 ---
 
@@ -72,17 +74,17 @@ description: <one-line># Codex가 trigger 판단에 쓰는 한 줄 트리거 문
 | Archetype | 트리거 키워드 (일부) | 기본 Workflow 단계 수 | Output 추가 섹션 |
 |---|---|---:|---|
 | `fix` | fix, failing, broken, 실패, 고쳐, 수정 | 5 | Root cause / What changed / Files touched / Validation / Risks |
-| `create` | create, generate, make, 생성, 만들 | 4 | (general fallback) |
+| `create` | create, generate, make, 생성, 만들 | 4 | Deliverable / Inputs used / Key decisions / Validation / Follow-ups |
 | `review` | review, 검토, 리뷰, diff, pr | 4 | Findings / Evidence / Risk level / Suggested fixes / Missing tests |
-| `analyze` | analyze, 분석, 요약 | 4 | (general fallback) |
-| `refactor` | refactor, 리팩터, 구조 개선 | 5 | (general fallback) |
+| `analyze` | analyze, 분석, 요약 | 4 | Question / Evidence / Findings / Confidence / Next actions |
+| `refactor` | refactor, 리팩터, 구조 개선 | 5 | Goal / Files changed / Behavior preserved / Validation / Risks |
 | `document` | readme, docs, 문서, changelog | 4 | Audience / Updated sections / Examples / Validation / Follow-ups |
 | `deploy` | deploy, release, ship, 배포 | 4 | Deployment target / Steps run / Result / Validation / Rollback notes |
 | `investigate` | debug, root cause, 원인, 왜 | 4 | Symptoms / Hypotheses / Evidence / Root cause / Next actions |
 | `design` | design, ui, ux, figma, 디자인 | 4 | Design goal / Approach / Key decisions / Accessibility / Implementation notes |
 | `general` | (fallback) | 5 | Summary / Inputs / Actions / Validation / Risks or follow-ups |
 
-> **주의:** §2.3 의 5항목 `Output format` 은 항상 들어가고, 위 표의 "Output 추가 섹션"은 **enriched 모드의 `### Variable slots` 와 `## Better prompt templates` 등에서 참조용으로** 사용됩니다 (`output_contract.required_sections`).
+> **주의:** 현재 구현에서 enriched 렌더링은 위 표의 `output_contract.required_sections`를 `## Output format`에 직접 사용합니다. fallback 5항목은 legacy/비-enriched 렌더링용입니다.
 
 ---
 
@@ -102,6 +104,7 @@ description: <one-line># Codex가 trigger 판단에 쓰는 한 줄 트리거 문
 | E6 | `## Quality checklist` | `skill_spec.quality_checklist[]` (고정 7항목, §8.A) |
 | E7 | `## Generalization notes` | `skill_spec.generalization_notes[]` (고정 3항목 + archetype 보강) |
 | E8 | `## Prompt quality score` | `skill_spec.prompt_quality.score`, `dimensions{}`, `diagnostics[]` |
+| E9 | `## Install readiness` | `skill_spec.prompt_quality.install_readiness` (grade, recommendation, blockers) |
 
 ### 4.B Better prompt templates 3종 (모든 Skill)
 
@@ -117,14 +120,14 @@ description: <one-line># Codex가 trigger 판단에 쓰는 한 줄 트리거 문
 
 | 슬롯 | 필수 | 의미 | 기본 placeholder |
 |---|:---:|---|---|
-| `target` | ✅ | 작업 대상 (파일/diff/로그/URL/문서/이슈/저장소 범위) | `[작업 대상]` |
+| `target` | ✅ | 작업 대상 (파일/diff/commit/PR/log/URL/문서/이슈/저장소 범위) | `[작업 대상]` |
 | `constraints` |  | 수정 범위, 금지사항, 스타일, 호환성, 제외 범위 | `[제약사항]` |
 | `verification` | ✅ | 테스트/lint/빌드/수동 확인 등 완료 판정 기준 | `[검증 기준]` |
 | `output_format` | ✅ | 응답에 포함할 섹션과 형식 | `[출력 형식]` |
 | `branch` |  | 후보 텍스트에서 `branch:` 패턴이 발견될 때만 추가 | `[브랜치]` |
 | `date` |  | YYYY-MM-DD 류 날짜 패턴이 발견될 때만 추가 | `[날짜/기간]` |
 
-각 슬롯의 `evidence`는 후보의 example_prompts·anti_patterns·verification에서 자동 추출되어 최대 5건까지 노출됩니다.
+각 슬롯의 `evidence`는 후보의 example_prompts·anti_patterns·verification에서 자동 추출되어 최대 5건까지 노출됩니다. `target`은 파일/URL뿐 아니라 `latest diff`, `git changes`, `commits`, `PR list`, `logs`, `screenshot`, `metrics`, `README` 같은 일반 입력 단서도 추출합니다.
 
 ---
 
@@ -185,7 +188,7 @@ archetype 보강:
 | `output_specificity` | 출력 명세성 | — |
 | `generalization_safety` | 일반화 안전성 | < 80 → "특정 파일명/URL/날짜에 과적합될 수 있어 변수화가 필요합니다." |
 
-`score = round(mean(dimensions))` (0~100). 모든 차원 양호 시 진단은 `"Skill 생성을 위한 핵심 계약 정보가 충분합니다."` 한 줄.
+`score = round(mean(dimensions))` (0~100). `generalization_safety`는 `diff`, `commits`, `logs` 같은 일반 입력 단서가 아니라 실제 파일 경로, URL, 날짜 같은 구체값이 과도할 때만 감점합니다. 모든 차원 양호 시 진단은 `"Skill 생성을 위한 핵심 계약 정보가 충분합니다."` 한 줄.
 
 ### 8.D Clarifying questions — 자동 생성 규칙
 
@@ -198,6 +201,18 @@ archetype 보강:
 | `verification_strength` | 완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요? |
 | `output_specificity` | 결과는 어떤 섹션이나 형식으로 정리하면 되나요? |
 | (항상 추가) | 불확실한 정보가 있으면 작업 전에 질문해도 되나요? |
+
+### 8.E Install readiness — 설치 추천 등급
+
+`compute_quality`는 `prompt_quality.install_readiness`를 함께 생성한다.
+
+| Grade | 조건 | Recommendation |
+|---|---|---|
+| `install_recommended` | score ≥ 85 이고 blocking issue 없음 | 승인 후 바로 `promote` 가능 |
+| `review_recommended` | score ≥ 72 이고 blocking issue 1개 이하 | `preview`에서 변수/검증 기준 확인 후 `promote` |
+| `needs_improvement` | 그 외 | 후보 보강 또는 추가 반복 예시 수집 |
+
+Blocking issue는 입력 대상 부족, 검증 기준 부족, 과적합 위험이 기준 이하일 때 생성된다.
 
 ---
 
@@ -217,19 +232,24 @@ archetype 보강:
 
 ---
 
-## 10. 유사도 기반 후보 (Source = `similarity`) 의 공용 기본값
+## 10. 유사도 기반 후보 (Source = `similarity`) 의 후보 합성
 
-`rules.py`에 매칭되지 않은 반복/유사 프롬프트 클러스터에 부여되는 공통 텍스트 (`build_similarity_candidates`):
+`rules.py`에 매칭되지 않은 반복/유사 프롬프트 클러스터는 `build_similarity_candidates`가 로컬·결정론적으로 action/domain profile을 추론해 구체적 후보로 합성한다. 목적은 “유사 프롬프트 클러스터를 Skill로 만들라”는 메타 Skill이 아니라, 사용자가 실제로 반복 요청한 작업 Skill을 제안하는 것이다.
 
 | 필드 | 기본값 |
 |---|---|
-| `title` | `Similar Prompt Cluster: {top_terms[:3] join ', '}` |
-| `goal` | `Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.` |
-| `when_to_use` | 2개: 절차화 필요 / 키워드 규칙으로 잡히지 않는 의미적 반복 |
-| `when_not_to_use` | 2개: 예시 프롬프트들이 서로 다른 목표 / 단일 저장소·고객명 의존 |
-| `workflow` | 5단계: 검토 → 공통 추출 → 민감정보 제거 → 검증/금지 명세 → 사람 승인 |
-| `verification` | 2개: 같은 Skill로 처리 가능성 / 특정 파일·고객·비밀값 비의존 |
-| `anti_patterns` | 2개: 유사도 점수만 보고 자동 생성 금지 / 다른 목적 합치기 금지 |
+| `name` | `{action}-{domain}` 예: `generate-release-notes`; fallback은 `handle-{top_terms}` |
+| `title` | domain/action별 구체 제목 예: `Release Notes Generator` |
+| `goal` | `{action} {domain.object_phrase}` 중심의 반복 작업 목표 |
+| `when_to_use` | 입력 대상만 달라지는 같은 domain/action 작업 반복 |
+| `when_not_to_use` | 서로 다른 목표 / 단일 저장소·고객·파일·비밀값 의존 |
+| `workflow` | domain profile별 절차. fallback은 공통 목표 확인 → 변수/제약 분리 → 검증 → 구조화 출력 |
+| `verification` | domain profile별 근거/검증 기준. fallback은 같은 목표/절차 가능성과 과적합 여부 |
+| `anti_patterns` | domain profile별 금지 사항 + 추측/과적합 방지 |
+| `output_sections` | domain profile이 있을 때 `output_contract.required_sections`에 우선 적용 |
+| `similarity.intent_profile` | 추론된 `action`, `domain`, `domain_label` 저장 |
+
+현재 기본 domain profile은 `release-notes`, `documentation`, `diff-review`, `infographic`, `data-analysis`이며, profile에 없는 클러스터는 top terms 기반의 안전한 fallback을 사용한다.
 
 ---
 

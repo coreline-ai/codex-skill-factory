@@ -153,7 +153,14 @@
       },
       "diagnostics": [
         "입력 대상이 예시에서 충분히 명확하지 않습니다."
-      ]
+      ],
+      "install_readiness": {
+        "grade": "review_recommended",
+        "recommendation": "preview에서 변수/검증 기준을 확인한 뒤 promote하세요.",
+        "blockers": [
+          "작업 대상 신호가 부족합니다."
+        ]
+      }
     },
     "better_prompt_templates": {
       "minimal": "Fix lint and type errors with minimal behavior-changing edits. 대상은 [작업 대상]입니다. 완료 후 원래 실패한 명령을 다시 실행한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.",

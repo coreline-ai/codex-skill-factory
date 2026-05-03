@@ -109,7 +109,7 @@ analytics
 
 - 저장소 디렉터리 생성
 - hook 스크립트 설치 또는 연결
-- Codex hook 설정 확인/생성
+- Codex hook 설정 확인/생성. 기존 `hooks.json`은 덮어쓰지 않고 merge하며, 변경 전 backup을 남긴다.
 - Skill 설치 디렉터리 확인/생성
 - dashboard/task 설정 생성
 - `.gitignore` 또는 로컬 제외 규칙 안내
@@ -128,6 +128,8 @@ Run next: codex-skill-factory inbox
 ### 4.2 `inbox`
 
 목적: 사용자가 처리해야 할 Skill 후보 inbox를 보여준다.
+
+TTY가 아닌 환경(CI, pipe, 자동화 실행)에서는 interactive prompt를 띄우지 않고 자동으로 비대화형 출력만 수행한다.
 
 내부 동작:
 
@@ -151,10 +153,11 @@ scan
    Source: rule
    Action: [p]review [m]promote [i]gnore [s]kip
 
-2. similar-release-notes
-   Repeated: 5
-   Quality: 79
+2. generate-release-notes
+   Repeated: 10
+   Quality: 85
    Source: similarity
+   Readiness: install_recommended
 ```
 
 ### 4.3 `promote <candidate>`
@@ -332,7 +335,12 @@ skills/<skill-name>/SKILL.md
     "prompt_quality": {
       "score": 87,
       "dimensions": {},
-      "diagnostics": []
+      "diagnostics": [],
+      "install_readiness": {
+        "grade": "install_recommended | review_recommended | needs_improvement",
+        "recommendation": "...",
+        "blockers": []
+      }
     },
     "better_prompt_templates": {},
     "clarifying_questions": [],
@@ -367,6 +375,7 @@ approved
 ## 8. 보안 및 개인정보 원칙
 
 - hook은 저장 전에 secret redaction을 수행한다.
+- legacy `.codex/hooks/log_*.py`는 자체 저장 로직을 갖지 않고 설치형 CLI hook handler로 위임한다.
 - OpenAI API key, GitHub token, bearer token, password/token/secret 패턴은 저장하지 않는다.
 - raw payload 전체 저장은 금지한다. 필요 key만 저장한다.
 - dashboard에는 redacted prompt만 표시한다.
@@ -379,9 +388,11 @@ approved
 
 - prompt/turn/tool-use hook 스크립트
 - 설치형 CLI hook command: `hook-user-prompt`, `hook-turn-stop`, `hook-post-tool-use`
+- legacy `.codex/hooks/log_*.py` 안전 wrapper
+- 기존 `hooks.json` merge/backup 기반 init
 - secret redaction
 - 규칙 기반 후보 생성
-- 유사도 기반 후보 생성
+- 유사도 기반 후보 생성과 action/domain profile 기반 후보 구체화
 - analytics 계산
 - approval 상태 관리
 - enrichment / Skill Spec / quality scoring
@@ -398,6 +409,7 @@ approved
 | 기본 UX | `inbox`, `promote` 구현 완료 | 실제 사용자 환경 E2E 확대 |
 | 경로 정책 | user scope와 project scope 구현 | user scope fixture/E2E 보강 |
 | 자동 설치 | `promote`가 승인·생성·설치 수행 | 실패 시 rollback 테스트 보강 |
+| 생성 Skill 품질 | archetype/domain별 Output format, install readiness, 유사도 후보 구체화 구현 | 도메인 profile 지속 보강 |
 | 검증 | 단위/CLI 제품 플로우 테스트 통과 | S1~S10 파일 단위 E2E 테스트로 분리 |
 | 문서 | 제품 목표/UX 반영 | 배포/설치 문서 보강 |
 
@@ -411,7 +423,7 @@ approved
 - secret이 로그에 저장되지 않음
 - `codex-skill-factory inbox`가 후보를 자동 생성·품질 평가·표시
 - `codex-skill-factory promote <candidate>`가 Skill을 생성·설치
-- 생성된 `SKILL.md`에 Prompt Quality Guide 포함
+- 생성된 `SKILL.md`에 archetype/domain별 Output format, Prompt Quality Guide, Install readiness 포함
 - `codex-skill-factory dashboard`가 HTML/JSON 생성
 - `codex-skill-factory doctor`가 설치/저장소/Skill 상태 검증
 - E2E 시나리오 테스트가 모두 통과
@@ -453,8 +465,8 @@ approved
 |---|---|
 | Given | 릴리즈 노트/변경 요약처럼 키워드가 조금 다른 유사 프롬프트 3개 저장 |
 | When | `codex-skill-factory inbox --no-interactive` 실행 |
-| Then | `source=similarity` 후보가 생성된다 |
-| Verify | 후보에 평균 유사도, 대표 토큰, Prompt Contract가 존재한다 |
+| Then | `source=similarity` 후보가 `generate-release-notes` 같은 구체적 작업 후보로 생성된다 |
+| Verify | 후보에 평균 유사도, 대표 토큰, `similarity.intent_profile`, Prompt Contract가 존재한다 |
 
 ### S5. inbox 사용자 플로우
 
@@ -462,7 +474,7 @@ approved
 |---|---|
 | Given | 후보 2개 존재 |
 | When | `codex-skill-factory inbox --no-interactive` 실행 |
-| Then | 후보명, 반복 횟수, quality score, 추천 action이 표시된다 |
+| Then | 후보명, 반복 횟수, quality score, install readiness, 추천 action이 표시된다 |
 | Verify | ignored 후보는 기본 표시에서 제외된다 |
 
 ### S6. promote로 Skill 생성·설치
@@ -472,7 +484,7 @@ approved
 | Given | `fix-failing-tests` 후보가 pending_review 상태 |
 | When | `codex-skill-factory promote fix-failing-tests --yes` 실행 |
 | Then | 후보가 `created`가 되고 `skills/fix-failing-tests/SKILL.md`가 생성된다 |
-| Verify | SKILL.md에 `Prompt quality guide`, `Better prompt templates`, `Quality checklist`가 포함된다 |
+| Verify | SKILL.md에 archetype별 `Output format`, `Prompt quality guide`, `Better prompt templates`, `Quality checklist`, `Install readiness`가 포함된다 |
 
 ### S7. dashboard 생성
 
@@ -481,7 +493,7 @@ approved
 | Given | 후보와 analytics 데이터 존재 |
 | When | `codex-skill-factory dashboard` 실행 |
 | Then | `dashboard.html`, `dashboard.json`이 생성된다 |
-| Verify | HTML에 후보명, quality score, better prompt template이 표시된다 |
+| Verify | HTML에 후보명, quality score, install readiness, better prompt template이 표시된다 |
 
 ### S8. doctor 실패 감지
 
@@ -567,6 +579,7 @@ codex-skill-factory dashboard
 - `init` 구현
 - 저장소 경로 정책 정리
 - hook 설치/검증 구현
+- 기존 Codex `hooks.json` 보존 merge와 backup 생성
 - skill 출력 위치 검증 구현
 
 완료 기준:
@@ -576,7 +589,9 @@ codex-skill-factory dashboard
 ### Phase 3. inbox 구현
 
 - `inbox`가 scan, similarity, enrichment, analytics를 한 번에 수행
+- similarity 후보는 메타 후보가 아니라 action/domain profile 기반의 구체적 작업 후보로 합성
 - non-interactive 출력과 interactive action 모두 지원
+- non-TTY 환경에서는 자동으로 interactive prompt를 생략
 - ignored 후보 기본 제외
 
 완료 기준:
@@ -616,10 +631,15 @@ codex-skill-factory dashboard
 
 - [x] `pipx install` 또는 wheel 설치 테스트 완료
 - [x] `init`이 빈 project scope 환경에서 성공
+- [x] `init`이 기존 hooks.json을 merge/backup으로 보존
 - [x] hook fixture로 prompt/turn/tool-use 로그 생성 성공
+- [x] legacy hook wrapper가 CLI hook handler로 위임
 - [x] secret redaction 테스트 통과
 - [x] `inbox`에서 후보 생성/표시 성공
+- [x] non-TTY inbox 자동 비대화형 실행 확인
 - [x] `promote`로 Skill 생성·설치 성공
+- [x] 유사도 후보가 구체적 작업 Skill 후보로 생성됨
+- [x] 생성 SKILL.md에 archetype/domain별 Output format과 Install readiness 반영
 - [x] dashboard 생성 성공
 - [x] doctor 성공/실패 케이스 검증
 - [x] 기존 advanced 명령 하위 호환 확인

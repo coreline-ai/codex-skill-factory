@@ -41,11 +41,17 @@ description: {{ candidate.description }}
 
 ## Output format
 
+{% if include_enriched and has_skill_spec -%}
+{% for item in skill_spec.output_contract.required_sections -%}
+- {{ item }}
+{% endfor %}
+{% else -%}
 - What changed
 - Files touched
 - Commands run
 - Validation result
 - Risks or follow-ups
+{% endif %}
 {% if include_enriched and has_skill_spec %}
 
 ## Prompt quality guide
@@ -113,6 +119,14 @@ A good prompt for this skill should include:
 - Overall: {{ skill_spec.prompt_quality.score }}
 {% for name, value in skill_spec.prompt_quality.dimensions.items() -%}
 - {{ name }}: {{ value }}
+{% endfor %}
+
+## Install readiness
+
+- Grade: {{ skill_spec.prompt_quality.install_readiness.grade }}
+- Recommendation: {{ skill_spec.prompt_quality.install_readiness.recommendation }}
+{% for item in skill_spec.prompt_quality.install_readiness.blockers -%}
+- Blocker: {{ item }}
 {% endfor %}
 
 ### Diagnostics

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import pathlib
+import shutil
+import sys
+from datetime import datetime
 from typing import Any, Optional
 
 import typer
@@ -82,6 +85,60 @@ def build_hooks_config(project: bool = False) -> dict[str, Any]:
     }
 
 
+def _hook_commands(entries: Any) -> set[str]:
+    commands: set[str] = set()
+    if not isinstance(entries, list):
+        return commands
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        if isinstance(entry.get("command"), str):
+            commands.add(entry["command"])
+        hooks = entry.get("hooks")
+        if isinstance(hooks, list):
+            for hook in hooks:
+                if isinstance(hook, dict) and isinstance(hook.get("command"), str):
+                    commands.add(hook["command"])
+    return commands
+
+
+def merge_hooks_config(existing: Any, generated: dict[str, Any]) -> dict[str, Any]:
+    merged = dict(existing) if isinstance(existing, dict) else {}
+    existing_hooks = merged.get("hooks")
+    if not isinstance(existing_hooks, dict):
+        existing_hooks = {}
+    generated_hooks = generated.get("hooks", {})
+    merged_hooks = dict(existing_hooks)
+
+    for event_name, generated_entries in generated_hooks.items():
+        current_entries = merged_hooks.get(event_name)
+        if not isinstance(current_entries, list):
+            current_entries = []
+        current_entries = list(current_entries)
+        existing_commands = _hook_commands(current_entries)
+        for generated_entry in generated_entries:
+            generated_commands = _hook_commands([generated_entry])
+            if generated_commands and generated_commands.issubset(existing_commands):
+                continue
+            current_entries.append(generated_entry)
+            existing_commands.update(generated_commands)
+        merged_hooks[event_name] = current_entries
+
+    merged["hooks"] = merged_hooks
+    return merged
+
+
+def backup_file(path: pathlib.Path) -> pathlib.Path | None:
+    if not path.exists():
+        return None
+    backup = path.with_suffix(path.suffix + ".bak")
+    if backup.exists():
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        backup = path.with_suffix(path.suffix + f".{timestamp}.bak")
+    shutil.copy2(path, backup)
+    return backup
+
+
 def enable_hooks_config_text(existing: str = "") -> str:
     if "codex_hooks = true" in existing:
         return existing if existing.endswith("\n") else existing + "\n"
@@ -128,7 +185,17 @@ def ensure_product_files(repo: Optional[pathlib.Path] = None, project: bool = Fa
         write_json(paths.ignored_file, {"ignored": {}})
     existing_config = config_file.read_text(encoding="utf-8") if config_file.exists() else ""
     write_text(config_file, enable_hooks_config_text(existing_config))
-    write_json(hooks_file, build_hooks_config(project=project))
+    generated_hooks = build_hooks_config(project=project)
+    existing_hooks = read_json(hooks_file, default={})
+    merged_hooks = merge_hooks_config(existing_hooks, generated_hooks)
+    if hooks_file.exists():
+        existing_text = hooks_file.read_text(encoding="utf-8")
+        merged_text = json.dumps(merged_hooks, ensure_ascii=False, indent=2) + "\n"
+        if existing_text != merged_text:
+            backup_file(hooks_file)
+            write_text(hooks_file, merged_text)
+    else:
+        write_json(hooks_file, merged_hooks)
     return paths, config_file, hooks_file, targets
 
 
@@ -164,11 +231,17 @@ def render_candidate_table(candidates: list[dict], title: str = "Codex Skill Fac
     table.add_column("Total")
     table.add_column("Source")
     table.add_column("Quality")
+    table.add_column("Readiness")
     table.add_column("Status")
     table.add_column("Next")
     for c in candidates:
         skill_spec = c.get("skill_spec") if isinstance(c.get("skill_spec"), dict) else {}
         quality = skill_spec.get("prompt_quality", {}).get("score") if skill_spec else None
+        readiness = (
+            skill_spec.get("prompt_quality", {}).get("install_readiness", {}).get("grade")
+            if skill_spec
+            else None
+        )
         status = c.get("status", "pending_review")
         next_action = "promote" if status in {"pending_review", "approved"} else "-"
         table.add_row(
@@ -177,6 +250,7 @@ def render_candidate_table(candidates: list[dict], title: str = "Codex Skill Fac
             str(c.get("frequency_total", 0)),
             c.get("source", "rule"),
             str(quality) if quality is not None else "-",
+            str(readiness) if readiness else "-",
             status,
             next_action,
         )
@@ -291,10 +365,15 @@ def render_report(candidates: list[dict], include_ignored: bool = True) -> str:
         ]
         if prompt_quality:
             diagnostics = prompt_quality.get("diagnostics", [])
+            readiness = prompt_quality.get("install_readiness", {})
             lines += [
                 f"- Prompt 품질 점수: {prompt_quality.get('score')}",
                 f"- 주요 진단: {diagnostics[0] if diagnostics else '없음'}",
             ]
+            if readiness:
+                lines.append(
+                    f"- 설치 준비도: {readiness.get('grade')} — {readiness.get('recommendation')}"
+                )
         if source == "similarity":
             similarity = c.get("similarity", {})
             lines += [
@@ -441,7 +520,7 @@ def inbox(
     console.print(f"Candidates: {len(visible)} / {len(candidates)}")
     console.print(f"Data: {paths.candidates_file}")
     console.print(f"Command success rate: {analytics.get('commands', {}).get('success_rate')}")
-    if no_interactive or not visible:
+    if no_interactive or not visible or not sys.stdin.isatty():
         return
     for candidate in visible:
         action = typer.prompt(

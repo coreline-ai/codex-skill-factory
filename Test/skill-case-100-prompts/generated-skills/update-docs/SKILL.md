@@ -36,11 +36,11 @@ Update documentation so it accurately reflects the current project behavior.
 
 ## Output format
 
-- What changed
-- Files touched
-- Commands run
-- Validation result
-- Risks or follow-ups
+- Audience
+- Updated sections
+- Examples
+- Validation
+- Follow-ups
 
 ## Prompt quality guide
 
@@ -126,18 +126,23 @@ Update documentation so it accurately reflects the current project behavior.
 
 ## Prompt quality score
 
-- Overall: 75
+- Overall: 77
 - intent_clarity: 90
-- input_specificity: 55
+- input_specificity: 70
 - constraint_clarity: 60
 - workflow_reusability: 90
 - verification_strength: 55
 - output_specificity: 85
 - generalization_safety: 88
 
+## Install readiness
+
+- Grade: review_recommended
+- Recommendation: preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
+- Blocker: 검증 기준이 부족합니다.
+
 ### Diagnostics
 
-- 입력 대상이 예시에서 충분히 명확하지 않습니다.
 - 수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.
 - 검증 기준이나 실행 명령이 부족합니다.
 

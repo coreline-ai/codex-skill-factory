@@ -37,11 +37,11 @@ Turn repository information into a clear, attractive, accurate infographic plan.
 
 ## Output format
 
-- What changed
-- Files touched
-- Commands run
-- Validation result
-- Risks or follow-ups
+- Deliverable
+- Inputs used
+- Key decisions
+- Validation
+- Follow-ups
 
 ## Prompt quality guide
 
@@ -52,7 +52,7 @@ A good prompt for this skill should include:
 - Constraints: scope limits, non-goals, style, and compatibility requirements
 - Workflow: a repeatable step-by-step process
 - Verification: README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다.
-- Output: Summary, Inputs, Actions, Validation, Risks or follow-ups
+- Output: Deliverable, Inputs used, Key decisions, Validation, Follow-ups
 
 ### Task contract
 
@@ -71,7 +71,7 @@ A good prompt for this skill should include:
 ### Minimal
 
 ```text
-Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.
+Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Deliverable, Inputs used, Key decisions, Validation, Follow-ups 형식으로 요약해줘.
 ```
 
 ### High-signal
@@ -93,7 +93,7 @@ Turn repository information into a clear, attractive, accurate infographic plan.
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Summary, Inputs, Actions, Validation, Risks or follow-ups
+- Deliverable, Inputs used, Key decisions, Validation, Follow-ups
 ```
 
 ### Clarifying
@@ -134,6 +134,12 @@ Turn repository information into a clear, attractive, accurate infographic plan.
 - verification_strength: 70
 - output_specificity: 85
 - generalization_safety: 88
+
+## Install readiness
+
+- Grade: review_recommended
+- Recommendation: preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
+- Blocker: 작업 대상 신호가 부족합니다.
 
 ### Diagnostics
 

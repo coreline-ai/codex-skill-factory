@@ -37,11 +37,11 @@ Fix lint and type errors with minimal behavior-changing edits.
 
 ## Output format
 
+- Root cause
 - What changed
 - Files touched
-- Commands run
-- Validation result
-- Risks or follow-ups
+- Validation
+- Risks
 
 ## Prompt quality guide
 
@@ -134,6 +134,12 @@ Fix lint and type errors with minimal behavior-changing edits.
 - verification_strength: 100
 - output_specificity: 85
 - generalization_safety: 88
+
+## Install readiness
+
+- Grade: review_recommended
+- Recommendation: preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
+- Blocker: 작업 대상 신호가 부족합니다.
 
 ### Diagnostics
 

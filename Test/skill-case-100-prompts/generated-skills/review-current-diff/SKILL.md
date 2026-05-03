@@ -35,11 +35,11 @@ Review the current changes for correctness, risk, maintainability, and missing t
 
 ## Output format
 
-- What changed
-- Files touched
-- Commands run
-- Validation result
-- Risks or follow-ups
+- Findings
+- Evidence
+- Risk level
+- Suggested fixes
+- Missing tests
 
 ## Prompt quality guide
 
@@ -102,7 +102,6 @@ Review the current changes for correctness, risk, maintainability, and missing t
 
 ## Ask when unclear
 
-- 작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?
 - 반드시 지켜야 할 범위, 금지사항, 스타일 또는 호환성 조건이 있나요?
 - 완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?
 - 불확실한 정보가 있으면 작업 전에 질문해도 되나요?
@@ -125,18 +124,23 @@ Review the current changes for correctness, risk, maintainability, and missing t
 
 ## Prompt quality score
 
-- Overall: 73
+- Overall: 80
 - intent_clarity: 90
-- input_specificity: 55
+- input_specificity: 100
 - constraint_clarity: 60
 - workflow_reusability: 80
 - verification_strength: 55
 - output_specificity: 85
 - generalization_safety: 88
 
+## Install readiness
+
+- Grade: review_recommended
+- Recommendation: preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
+- Blocker: 검증 기준이 부족합니다.
+
 ### Diagnostics
 
-- 입력 대상이 예시에서 충분히 명확하지 않습니다.
 - 수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.
 - 검증 기준이나 실행 명령이 부족합니다.
 

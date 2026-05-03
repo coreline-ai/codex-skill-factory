@@ -49,6 +49,198 @@ class SimilarityCluster:
     top_terms: list[str]
 
 
+@dataclass(frozen=True)
+class ActionProfile:
+    slug: str
+    verb: str
+    noun: str
+    keywords: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class DomainProfile:
+    slug: str
+    label: str
+    object_phrase: str
+    keywords: tuple[str, ...]
+    workflow: tuple[str, ...]
+    verification: tuple[str, ...]
+    anti_patterns: tuple[str, ...]
+    output_sections: tuple[str, ...]
+    title_by_action: dict[str, str]
+
+
+_ACTION_PROFILES = [
+    ActionProfile("fix", "fix", "Fixer", ("fix", "debug", "resolve", "error", "실패", "고쳐", "수정", "해결")),
+    ActionProfile("review", "review", "Reviewer", ("review", "검토", "리뷰", "pr", "diff")),
+    ActionProfile("update", "update", "Updater", ("update", "edit", "refresh", "개선", "갱신", "업데이트")),
+    ActionProfile(
+        "generate",
+        "generate",
+        "Generator",
+        ("generate", "create", "make", "write", "draft", "prepare", "작성", "생성", "만들"),
+    ),
+    ActionProfile("summarize", "summarize", "Summarizer", ("summarize", "summary", "요약", "정리")),
+    ActionProfile("analyze", "analyze", "Analyzer", ("analyze", "analysis", "inspect", "분석", "파악")),
+    ActionProfile("refactor", "refactor", "Refactoring Assistant", ("refactor", "리팩터", "리팩토", "구조 개선")),
+    ActionProfile("design", "design", "Designer", ("design", "ui", "ux", "figma", "디자인", "설계")),
+    ActionProfile("handle", "handle", "Workflow", ()),
+]
+
+
+_DOMAIN_PROFILES = [
+    DomainProfile(
+        slug="release-notes",
+        label="Release Notes",
+        object_phrase="release notes from commits, diffs, PRs, or git changes",
+        keywords=(
+            "release note",
+            "release notes",
+            "changelog",
+            "change log",
+            "릴리즈 노트",
+            "릴리즈노트",
+            "변경 로그",
+            "변경사항",
+            "release summary",
+            "release announcement",
+            "release communication",
+            "git changes",
+            "commits",
+            "commit history",
+            "commit messages",
+            "merged commits",
+            "upgrade notes",
+            "notable changes",
+            "user visible changes",
+            "latest diff",
+        ),
+        workflow=(
+            "대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.",
+            "변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.",
+            "사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.",
+            "버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.",
+            "최종 release notes와 검증/리스크를 요청된 형식으로 정리한다.",
+        ),
+        verification=(
+            "작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.",
+            "확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다.",
+        ),
+        anti_patterns=(
+            "커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.",
+            "확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다.",
+        ),
+        output_sections=(
+            "Release summary",
+            "Notable changes",
+            "Breaking changes or migrations",
+            "Validation",
+            "Risks or follow-ups",
+        ),
+        title_by_action={
+            "generate": "Release Notes Generator",
+            "update": "Release Notes Updater",
+            "summarize": "Release Notes Summarizer",
+        },
+    ),
+    DomainProfile(
+        slug="documentation",
+        label="Documentation",
+        object_phrase="README, docs, guides, or changelog-style documentation",
+        keywords=("readme", "docs", "documentation", "guide", "문서", "가이드", "사용법"),
+        workflow=(
+            "문서 독자, 목적, 현재 코드/동작을 확인한다.",
+            "기존 문서와 실제 동작이 다른 부분을 찾아 정리한다.",
+            "설치, 설정, 사용 예시, 주의사항을 필요한 범위에서 갱신한다.",
+            "확인하지 않은 기능 설명과 오래된 경로를 제거한다.",
+            "명령, 경로, 링크가 현재 저장소와 맞는지 검증한다.",
+        ),
+        verification=(
+            "문서의 명령과 경로가 현재 프로젝트 구조와 일치하는지 확인한다.",
+            "확인하지 않은 기능이나 외부 사실을 문서에 추가하지 않았는지 확인한다.",
+        ),
+        anti_patterns=(
+            "코드 확인 없이 추측으로 기능을 설명하지 않는다.",
+            "한 저장소의 파일명이나 고객명을 공용 절차에 고정하지 않는다.",
+        ),
+        output_sections=("Audience", "Updated sections", "Examples", "Validation", "Follow-ups"),
+        title_by_action={"update": "Documentation Updater", "generate": "Documentation Generator"},
+    ),
+    DomainProfile(
+        slug="diff-review",
+        label="Diff Review",
+        object_phrase="git diffs, PR changes, or code review inputs",
+        keywords=("diff", "pr", "pull request", "code review", "리뷰", "검토", "변경사항 검토"),
+        workflow=(
+            "검토 대상 diff와 변경 의도를 확인한다.",
+            "정확성, 회귀 위험, 보안/데이터 영향, 누락 테스트를 우선 점검한다.",
+            "문제별로 영향도, 근거 위치, 수정 제안을 분리해 작성한다.",
+            "스타일 선호보다 실제 버그 가능성과 운영 리스크를 우선한다.",
+        ),
+        verification=(
+            "모든 지적 사항이 diff나 제공된 코드 근거를 갖는지 확인한다.",
+            "재현/검증 가능한 후속 테스트가 필요한지 확인한다.",
+        ),
+        anti_patterns=(
+            "근거 없는 추측을 확정적인 결함처럼 말하지 않는다.",
+            "사소한 스타일만 과도하게 지적하지 않는다.",
+        ),
+        output_sections=("Findings", "Evidence", "Risk level", "Suggested fixes", "Missing tests"),
+        title_by_action={"review": "Diff Reviewer"},
+    ),
+    DomainProfile(
+        slug="infographic",
+        label="Infographic",
+        object_phrase="repository or product information into a concise visual brief",
+        keywords=("infographic", "인포그래픽", "16:9", "visual brief", "image prompt", "이미지"),
+        workflow=(
+            "분석 대상과 시각화 목적을 확인한다.",
+            "핵심 메시지, 섹션, 수치, 근거를 5개 이하로 압축한다.",
+            "레이아웃, 색상, 아이콘, 텍스트 길이를 이미지 생성에 적합하게 정리한다.",
+            "확인되지 않은 수치나 과장된 표현을 제거한다.",
+        ),
+        verification=(
+            "시각 요소와 수치가 제공된 자료에서 확인 가능한지 점검한다.",
+            "이미지 안의 텍스트가 읽기 쉬운 길이인지 확인한다.",
+        ),
+        anti_patterns=(
+            "참조 이미지의 주제나 브랜드를 근거 없이 복사하지 않는다.",
+            "확인되지 않은 성과 수치나 기능을 추가하지 않는다.",
+        ),
+        output_sections=(
+            "Visual goal",
+            "Key content blocks",
+            "Layout and style",
+            "Image prompt",
+            "Validation notes",
+        ),
+        title_by_action={"generate": "Infographic Brief Generator", "design": "Infographic Planner"},
+    ),
+    DomainProfile(
+        slug="data-analysis",
+        label="Data Analysis",
+        object_phrase="logs, metrics, tables, reports, or other structured evidence",
+        keywords=("metrics", "report", "analytics", "csv", "table", "로그", "지표", "분석 리포트", "데이터"),
+        workflow=(
+            "분석 질문과 입력 데이터 범위를 확인한다.",
+            "데이터 품질, 누락값, 기준 기간을 점검한다.",
+            "핵심 패턴과 예외를 근거와 함께 분리한다.",
+            "결론, 신뢰도, 추가 확인이 필요한 항목을 정리한다.",
+        ),
+        verification=(
+            "결론이 입력 데이터나 로그 근거와 연결되는지 확인한다.",
+            "표본 부족, 기간 오류, 누락 데이터를 리스크로 표시한다.",
+        ),
+        anti_patterns=(
+            "근거 없는 인과관계를 단정하지 않는다.",
+            "데이터 범위 밖의 결론을 일반화하지 않는다.",
+        ),
+        output_sections=("Question", "Evidence", "Findings", "Confidence", "Next actions"),
+        title_by_action={"analyze": "Data Analyzer", "summarize": "Data Summary Generator"},
+    ),
+]
+
+
 def prompt_text(row: dict) -> str:
     value = row.get("normalized_prompt") or row.get("prompt_redacted") or row.get("prompt") or ""
     return value if isinstance(value, str) else str(value)
@@ -197,6 +389,151 @@ def _representative_examples(rows: list[dict], limit: int = 5) -> list[str]:
     return examples
 
 
+def _cluster_text(cluster: SimilarityCluster) -> str:
+    values = [prompt_text(row) for row in cluster.rows]
+    values.extend(cluster.top_terms)
+    return normalize_text(" ".join(values))
+
+
+def _keyword_hits(text: str, keywords: tuple[str, ...]) -> int:
+    hits = 0
+    for keyword in keywords:
+        lowered = keyword.lower()
+        if re.fullmatch(r"[a-z0-9]{1,3}", lowered):
+            if re.search(rf"(?<![a-z0-9]){re.escape(lowered)}(?![a-z0-9])", text):
+                hits += 1
+            continue
+        if lowered in text:
+            hits += 1
+    return hits
+
+
+def _infer_action(text: str) -> ActionProfile:
+    scored = [
+        (_keyword_hits(text, action.keywords), index, action)
+        for index, action in enumerate(_ACTION_PROFILES)
+        if action.keywords
+    ]
+    scored = [item for item in scored if item[0] > 0]
+    if not scored:
+        return _ACTION_PROFILES[-1]
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return scored[0][2]
+
+
+def _infer_domain(text: str, top_terms: list[str]) -> DomainProfile:
+    scored = [
+        (_keyword_hits(text, domain.keywords), index, domain)
+        for index, domain in enumerate(_DOMAIN_PROFILES)
+    ]
+    scored = [item for item in scored if item[0] > 0]
+    if scored:
+        scored.sort(key=lambda item: (-item[0], item[1]))
+        return scored[0][2]
+
+    slug = _slug_terms(top_terms, "repeated-task")
+    label_terms = [term for term in top_terms if not term.startswith("char:")][:3]
+    label = " ".join(term.replace("-", " ").title() for term in label_terms) or "Repeated Task"
+    object_terms = ", ".join(label_terms) if label_terms else "the repeated request pattern"
+    return DomainProfile(
+        slug=slug,
+        label=label,
+        object_phrase=f"requests about {object_terms}",
+        keywords=(),
+        workflow=(
+            "반복 요청들의 공통 목표와 입력 대상을 확인한다.",
+            "매번 달라지는 값과 항상 유지되는 제약을 분리한다.",
+            "동일한 절차로 새 입력을 처리하되 불명확한 정보는 먼저 질문한다.",
+            "요청에 맞는 검증 기준을 적용하고 확인하지 못한 부분을 표시한다.",
+            "결과, 근거, 검증 상태, 후속 리스크를 구조화해 정리한다.",
+        ),
+        verification=(
+            "새 요청이 같은 목표와 절차로 처리 가능한지 확인한다.",
+            "특정 파일명, 고객명, 날짜, 비밀값에 과적합되지 않았는지 확인한다.",
+        ),
+        anti_patterns=(
+            "서로 다른 목적의 요청을 단지 단어가 비슷하다는 이유로 합치지 않는다.",
+            "예시 하나에만 등장한 세부 값을 공용 절차로 고정하지 않는다.",
+        ),
+        output_sections=(),
+        title_by_action={},
+    )
+
+
+def _title_for(action: ActionProfile, domain: DomainProfile) -> str:
+    return domain.title_by_action.get(action.slug, f"{domain.label} {action.noun}")
+
+
+def _candidate_from_cluster(
+    cluster: SimilarityCluster,
+    name: str,
+    examples: list[str],
+    action: ActionProfile,
+    domain: DomainProfile,
+    threshold: float,
+) -> dict:
+    title = _title_for(action, domain)
+    return {
+        "name": name,
+        "title": title,
+        "description": (
+            f"Use when the user repeatedly asks to {action.verb} {domain.object_phrase} "
+            f"({len(cluster.rows)} similar examples)."
+        ),
+        "score": min(100, 35 + len(cluster.rows) * 8 + int(cluster.average_similarity * 20)),
+        "frequency_total": len(cluster.rows),
+        "example_prompts": examples,
+        "when_to_use": [
+            f"{domain.object_phrase} 요청이 반복되고 입력 대상만 달라질 때",
+            f"{domain.label} 작업을 같은 절차와 출력 형식으로 자주 처리해야 할 때",
+        ],
+        "when_not_to_use": [
+            "예시 프롬프트들이 서로 다른 목표나 산출물을 요구하는 경우",
+            "한 저장소, 고객명, 파일명, 비밀값에만 강하게 의존해 일반화할 수 없는 경우",
+        ],
+        "goal": (
+            f"{action.verb.capitalize()} {domain.object_phrase} with a repeatable workflow that "
+            "keeps target, constraints, verification, and output expectations explicit."
+        ),
+        "workflow": list(domain.workflow),
+        "verification": list(domain.verification),
+        "anti_patterns": list(domain.anti_patterns),
+        "output_sections": list(domain.output_sections),
+        "status": "pending_review",
+        "source": "similarity",
+        "similarity": {
+            "cluster_id": cluster.cluster_id,
+            "average_similarity": cluster.average_similarity,
+            "threshold": threshold,
+            "top_terms": cluster.top_terms,
+            "intent_profile": {
+                "action": action.slug,
+                "domain": domain.slug,
+                "domain_label": domain.label,
+            },
+        },
+    }
+
+
+def _candidate_name(action: ActionProfile, domain: DomainProfile) -> str:
+    return f"{action.slug}-{domain.slug}" if action.slug != "handle" else f"handle-{domain.slug}"
+
+
+def _merge_clusters(clusters: list[SimilarityCluster]) -> SimilarityCluster:
+    rows = [row for cluster in clusters for row in cluster.rows]
+    row_hash = hashlib.sha256("|".join(prompt_text(row) for row in rows).encode("utf-8")).hexdigest()[:8]
+    total_rows = sum(len(cluster.rows) for cluster in clusters) or 1
+    weighted_similarity = sum(
+        cluster.average_similarity * len(cluster.rows) for cluster in clusters
+    ) / total_rows
+    return SimilarityCluster(
+        cluster_id=f"similar-{row_hash}",
+        rows=rows,
+        average_similarity=round(weighted_similarity, 4),
+        top_terms=_top_terms(rows),
+    )
+
+
 def build_similarity_candidates(
     prompts: list[dict],
     existing_candidate_names: set[str] | None = None,
@@ -204,61 +541,30 @@ def build_similarity_candidates(
     min_frequency: int = 2,
 ) -> list[dict]:
     existing_candidate_names = existing_candidate_names or set()
-    candidates: list[dict] = []
+    grouped: dict[str, list[tuple[SimilarityCluster, ActionProfile, DomainProfile]]] = {}
     for cluster in find_similarity_clusters(prompts, threshold=threshold, min_cluster_size=min_frequency):
         matched_rule_names = {name for row in cluster.rows for name in classify_prompt(prompt_text(row))}
         if matched_rule_names and matched_rule_names.issubset(existing_candidate_names):
             continue
 
-        slug = _slug_terms(cluster.top_terms, cluster.cluster_id)
-        name = f"similar-{slug}"
-        if name in existing_candidate_names:
-            name = cluster.cluster_id
-        title_terms = ", ".join(cluster.top_terms[:3]) or "similar prompts"
-        examples = _representative_examples(cluster.rows)
-        candidates.append(
-            {
-                "name": name,
-                "title": f"Similar Prompt Cluster: {title_terms}",
-                "description": (
-                    "Use when the user repeatedly asks semantically similar requests represented by "
-                    f"this prompt cluster ({len(cluster.rows)} examples)."
-                ),
-                "score": min(100, 35 + len(cluster.rows) * 8 + int(cluster.average_similarity * 20)),
-                "frequency_total": len(cluster.rows),
-                "example_prompts": examples,
-                "when_to_use": [
-                    "유사한 프롬프트가 반복되어 절차화된 Skill 후보가 필요할 때",
-                    "키워드 규칙으로는 잡히지 않지만 의미상 같은 작업이 반복될 때",
-                ],
-                "when_not_to_use": [
-                    "예시 프롬프트들이 서로 다른 목표를 갖는 경우",
-                    "한 저장소나 특정 고객명에만 강하게 의존하는 경우",
-                ],
-                "goal": "Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.",
-                "workflow": [
-                    "대표 예시 프롬프트들을 검토한다.",
-                    "공통 목표와 반복 절차를 추출한다.",
-                    "프로젝트 고유 정보나 민감정보를 제거한다.",
-                    "검증 방법과 금지 사항을 명확히 작성한다.",
-                    "생성 전 사람이 후보를 승인한다.",
-                ],
-                "verification": [
-                    "예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.",
-                    "생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.",
-                ],
-                "anti_patterns": [
-                    "유사도 점수만 보고 자동 생성하지 않는다.",
-                    "서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.",
-                ],
-                "status": "pending_review",
-                "source": "similarity",
-                "similarity": {
-                    "cluster_id": cluster.cluster_id,
-                    "average_similarity": cluster.average_similarity,
-                    "threshold": threshold,
-                    "top_terms": cluster.top_terms,
-                },
-            }
-        )
+        text = _cluster_text(cluster)
+        action = _infer_action(text)
+        domain = _infer_domain(text, cluster.top_terms)
+        grouped.setdefault(_candidate_name(action, domain), []).append((cluster, action, domain))
+
+    candidates: list[dict] = []
+    used_names = set(existing_candidate_names)
+    for base_name, items in grouped.items():
+        clusters = [item[0] for item in items]
+        action = items[0][1]
+        domain = items[0][2]
+        merged_cluster = _merge_clusters(clusters)
+        name = base_name if base_name not in used_names else merged_cluster.cluster_id
+        if name in used_names:
+            name = f"{name}-{merged_cluster.cluster_id.rsplit('-', 1)[-1]}"
+        used_names.add(name)
+        examples = _representative_examples(merged_cluster.rows)
+        candidate = _candidate_from_cluster(merged_cluster, name, examples, action, domain, threshold)
+        candidate["similarity"]["merged_cluster_count"] = len(clusters)
+        candidates.append(candidate)
     return candidates

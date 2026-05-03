@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
 _DIMENSIONS = [
@@ -11,6 +12,11 @@ _DIMENSIONS = [
     "output_specificity",
     "generalization_safety",
 ]
+_SPECIFIC_TARGET_RE = re.compile(
+    r"https?://|(?:[\w.\-]+/)*[\w.\-]+\."
+    r"(?:py|ts|tsx|js|jsx|md|json|yaml|yml|toml|sql|html|css|go|rs|java|kt|swift|php|rb|c|cpp|h)"
+    r"|\b\d{4}[-/.]\d{1,2}[-/.]\d{1,2}\b"
+)
 
 
 def _bounded(value: int) -> int:
@@ -24,6 +30,32 @@ def _slot_by_name(skill_spec: dict[str, Any], name: str) -> dict[str, Any]:
     return {}
 
 
+def compute_install_readiness(score: int, dimensions: dict[str, int]) -> dict[str, Any]:
+    blockers: list[str] = []
+    if dimensions.get("input_specificity", 0) < 70:
+        blockers.append("작업 대상 신호가 부족합니다.")
+    if dimensions.get("verification_strength", 0) < 70:
+        blockers.append("검증 기준이 부족합니다.")
+    if dimensions.get("generalization_safety", 0) < 70:
+        blockers.append("특정 예시에 과적합될 위험이 큽니다.")
+
+    if score >= 85 and not blockers:
+        grade = "install_recommended"
+        recommendation = "승인 후 바로 promote해도 좋습니다."
+    elif score >= 72 and len(blockers) <= 1:
+        grade = "review_recommended"
+        recommendation = "preview에서 변수/검증 기준을 확인한 뒤 promote하세요."
+    else:
+        grade = "needs_improvement"
+        recommendation = "승인 전에 후보를 보강하거나 더 많은 반복 예시를 수집하세요."
+
+    return {
+        "grade": grade,
+        "recommendation": recommendation,
+        "blockers": blockers,
+    }
+
+
 def compute_quality(candidate: dict[str, Any], skill_spec: dict[str, Any]) -> dict[str, Any]:
     contract = skill_spec.get("prompt_contract", {})
     target_slot = _slot_by_name(skill_spec, "target")
@@ -32,15 +64,17 @@ def compute_quality(candidate: dict[str, Any], skill_spec: dict[str, Any]) -> di
     output_sections = skill_spec.get("output_contract", {}).get("required_sections", [])
     workflow = contract.get("workflow", [])
     examples = candidate.get("example_prompts", []) if isinstance(candidate.get("example_prompts"), list) else []
+    target_evidence = target_slot.get("evidence", [])
+    specific_target_count = sum(1 for item in target_evidence if _SPECIFIC_TARGET_RE.search(str(item)))
 
     dimensions = {
         "intent_clarity": _bounded(55 + bool(contract.get("intent")) * 25 + bool(candidate.get("title")) * 10),
-        "input_specificity": _bounded(45 + len(target_slot.get("evidence", [])) * 15 + bool(examples) * 10),
+        "input_specificity": _bounded(45 + len(target_evidence) * 15 + bool(examples) * 10),
         "constraint_clarity": _bounded(45 + len(constraints_slot.get("evidence", [])) * 15),
         "workflow_reusability": _bounded(40 + len(workflow) * 10),
         "verification_strength": _bounded(40 + len(verification_slot.get("evidence", [])) * 15),
         "output_specificity": _bounded(45 + len(output_sections) * 8),
-        "generalization_safety": _bounded(88 - max(0, len(target_slot.get("evidence", [])) - 2) * 8),
+        "generalization_safety": _bounded(88 - max(0, specific_target_count - 2) * 8),
     }
     diagnostics: list[str] = []
     if dimensions["input_specificity"] < 70:
@@ -54,7 +88,12 @@ def compute_quality(candidate: dict[str, Any], skill_spec: dict[str, Any]) -> di
     if not diagnostics:
         diagnostics.append("Skill 생성을 위한 핵심 계약 정보가 충분합니다.")
     score = round(sum(dimensions.values()) / len(_DIMENSIONS))
-    return {"score": score, "dimensions": dimensions, "diagnostics": diagnostics}
+    return {
+        "score": score,
+        "dimensions": dimensions,
+        "diagnostics": diagnostics,
+        "install_readiness": compute_install_readiness(score, dimensions),
+    }
 
 
 def generate_prompt_templates(skill_spec: dict[str, Any]) -> dict[str, str]:

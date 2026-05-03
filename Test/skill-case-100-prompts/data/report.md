@@ -6,8 +6,9 @@
 - 전체 빈도: 25
 - 상태: pending_review
 - 출처: rule
-- Prompt 품질 점수: 87
+- Prompt 품질 점수: 89
 - 주요 진단: Skill 생성을 위한 핵심 계약 정보가 충분합니다.
+- 설치 준비도: install_recommended — 승인 후 바로 promote해도 좋습니다.
 
 Use when the user asks to fix failing tests, CI failures, pytest/Jest errors, broken test suites, or red builds.
 
@@ -36,6 +37,7 @@ codex-skill-factory create fix-failing-tests
 - 출처: rule
 - Prompt 품질 점수: 83
 - 주요 진단: 입력 대상이 예시에서 충분히 명확하지 않습니다.
+- 설치 준비도: review_recommended — preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
 
 Use when the user asks to fix lint, formatting, typecheck, mypy, tsc, ruff, eslint, or static analysis errors.
 
@@ -63,6 +65,7 @@ codex-skill-factory create fix-lint-type-errors
 - 출처: rule
 - Prompt 품질 점수: 78
 - 주요 진단: 입력 대상이 예시에서 충분히 명확하지 않습니다.
+- 설치 준비도: review_recommended — preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
 
 Use when the user asks to analyze a GitHub repository and create a concise 16:9 infographic brief or image-generation prompt.
 
@@ -86,8 +89,9 @@ codex-skill-factory create repo-to-infographic
 - 전체 빈도: 20
 - 상태: pending_review
 - 출처: rule
-- Prompt 품질 점수: 73
-- 주요 진단: 입력 대상이 예시에서 충분히 명확하지 않습니다.
+- Prompt 품질 점수: 80
+- 주요 진단: 수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.
+- 설치 준비도: review_recommended — preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
 
 Use when the user asks to review the current git diff, PR changes, code changes, or wants risk and bug analysis before committing.
 
@@ -113,8 +117,9 @@ codex-skill-factory create review-current-diff
 - 전체 빈도: 15
 - 상태: pending_review
 - 출처: rule
-- Prompt 품질 점수: 75
-- 주요 진단: 입력 대상이 예시에서 충분히 명확하지 않습니다.
+- Prompt 품질 점수: 77
+- 주요 진단: 수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.
+- 설치 준비도: review_recommended — preview에서 변수/검증 기준을 확인한 뒤 promote하세요.
 
 Use when the user asks to update README, docs, API documentation, usage guides, or changelog-like documentation.
 
@@ -133,32 +138,33 @@ codex-skill-factory ignore update-docs
 codex-skill-factory create update-docs
 ```
 
-## 6. `similar-release-notes-changes`
+## 6. `generate-release-notes`
 
 - 점수: 100
 - 전체 빈도: 10
 - 상태: pending_review
 - 출처: similarity
-- Prompt 품질 점수: 79
-- 주요 진단: 입력 대상이 예시에서 충분히 명확하지 않습니다.
-- 평균 유사도: 0.2868
+- Prompt 품질 점수: 85
+- 주요 진단: Skill 생성을 위한 핵심 계약 정보가 충분합니다.
+- 설치 준비도: install_recommended — 승인 후 바로 promote해도 좋습니다.
+- 평균 유사도: 1.0
 - 대표 토큰: release, notes, changes, from
 
-Use when the user repeatedly asks semantically similar requests represented by this prompt cluster (10 examples).
+Use when the user repeatedly asks to generate release notes from commits, diffs, PRs, or git changes (10 similar examples).
 
 ### 예시
 
-- prepare release notes from current commits and summarize notable changes
-- generate release summary from git commits with breaking changes and migration notes
-- write a release announcement from merged commits and categorize changes
 - make version release notes based on commit history and user visible changes
 - draft release communication using commit messages and upgrade notes
+- write a release announcement from merged commits and categorize changes
+- generate release summary from git commits with breaking changes and migration notes
+- prepare release notes from current commits and summarize notable changes
 
 ### 명령
 
 ```bash
-codex-skill-factory preview similar-release-notes-changes
-codex-skill-factory approve similar-release-notes-changes
-codex-skill-factory ignore similar-release-notes-changes
-codex-skill-factory create similar-release-notes-changes
+codex-skill-factory preview generate-release-notes
+codex-skill-factory approve generate-release-notes
+codex-skill-factory ignore generate-release-notes
+codex-skill-factory create generate-release-notes
 ```

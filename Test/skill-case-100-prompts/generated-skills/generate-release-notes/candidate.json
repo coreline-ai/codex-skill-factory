@@ -1,0 +1,218 @@
+{
+  "name": "generate-release-notes",
+  "title": "Release Notes Generator",
+  "description": "Use when the user repeatedly asks to generate release notes from commits, diffs, PRs, or git changes (10 similar examples).",
+  "score": 100,
+  "frequency_total": 10,
+  "example_prompts": [
+    "make version release notes based on commit history and user visible changes",
+    "draft release communication using commit messages and upgrade notes",
+    "write a release announcement from merged commits and categorize changes",
+    "generate release summary from git commits with breaking changes and migration notes",
+    "prepare release notes from current commits and summarize notable changes"
+  ],
+  "when_to_use": [
+    "release notes from commits, diffs, PRs, or git changes 요청이 반복되고 입력 대상만 달라질 때",
+    "Release Notes 작업을 같은 절차와 출력 형식으로 자주 처리해야 할 때"
+  ],
+  "when_not_to_use": [
+    "예시 프롬프트들이 서로 다른 목표나 산출물을 요구하는 경우",
+    "한 저장소, 고객명, 파일명, 비밀값에만 강하게 의존해 일반화할 수 없는 경우"
+  ],
+  "goal": "Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.",
+  "workflow": [
+    "대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.",
+    "변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.",
+    "사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.",
+    "버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.",
+    "최종 release notes와 검증/리스크를 요청된 형식으로 정리한다."
+  ],
+  "verification": [
+    "작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.",
+    "확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다."
+  ],
+  "anti_patterns": [
+    "커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.",
+    "확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다."
+  ],
+  "output_sections": [
+    "Release summary",
+    "Notable changes",
+    "Breaking changes or migrations",
+    "Validation",
+    "Risks or follow-ups"
+  ],
+  "status": "pending_review",
+  "source": "similarity",
+  "similarity": {
+    "cluster_id": "similar-e03ae762",
+    "average_similarity": 1.0,
+    "threshold": 0.52,
+    "top_terms": [
+      "release",
+      "notes",
+      "changes",
+      "from"
+    ],
+    "intent_profile": {
+      "action": "generate",
+      "domain": "release-notes",
+      "domain_label": "Release Notes"
+    },
+    "merged_cluster_count": 5
+  },
+  "skill_spec": {
+    "schema_version": "1.0",
+    "task_archetype": "document",
+    "intent_invariant": "Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.",
+    "top_terms": [
+      "release",
+      "notes",
+      "changes",
+      "from",
+      "commits",
+      "git"
+    ],
+    "variable_slots": [
+      {
+        "name": "target",
+        "description": "작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위",
+        "required": true,
+        "evidence": [
+          "commits",
+          "git changes",
+          "commit",
+          "current commits",
+          "diff"
+        ],
+        "default_placeholder": "[작업 대상]"
+      },
+      {
+        "name": "constraints",
+        "description": "수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위",
+        "required": false,
+        "evidence": [
+          "커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.",
+          "확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다."
+        ],
+        "default_placeholder": "[제약사항]"
+      },
+      {
+        "name": "verification",
+        "description": "테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준",
+        "required": true,
+        "evidence": [
+          "작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.",
+          "확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다."
+        ],
+        "default_placeholder": "[검증 기준]"
+      },
+      {
+        "name": "output_format",
+        "description": "결과 응답에 포함해야 할 섹션과 형식",
+        "required": true,
+        "evidence": [],
+        "default_placeholder": "[출력 형식]"
+      }
+    ],
+    "preconditions": [
+      "작업 대상 또는 입력 자료가 명확해야 한다.",
+      "완료 여부를 판단할 검증 기준이 있어야 한다."
+    ],
+    "prompt_contract": {
+      "intent": "Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.",
+      "input": "작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위",
+      "context": "후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.",
+      "constraints": [
+        "커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.",
+        "확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다."
+      ],
+      "workflow": [
+        "대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.",
+        "변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.",
+        "사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.",
+        "버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.",
+        "최종 release notes와 검증/리스크를 요청된 형식으로 정리한다."
+      ],
+      "verification": [
+        "작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.",
+        "확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다."
+      ],
+      "output": {
+        "format": "structured_summary",
+        "required_sections": [
+          "Release summary",
+          "Notable changes",
+          "Breaking changes or migrations",
+          "Validation",
+          "Risks or follow-ups"
+        ]
+      }
+    },
+    "workflow_pattern": [
+      "대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.",
+      "변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.",
+      "사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.",
+      "버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.",
+      "최종 release notes와 검증/리스크를 요청된 형식으로 정리한다."
+    ],
+    "risk_controls": [
+      "특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.",
+      "검증 없이 완료 처리하지 않는다.",
+      "예시 프롬프트에만 등장한 세부사항을 Skill 본문에 고정하지 않는다."
+    ],
+    "output_contract": {
+      "format": "summary + evidence + validation + risks",
+      "required_sections": [
+        "Release summary",
+        "Notable changes",
+        "Breaking changes or migrations",
+        "Validation",
+        "Risks or follow-ups"
+      ]
+    },
+    "prompt_quality": {
+      "score": 85,
+      "dimensions": {
+        "intent_clarity": 90,
+        "input_specificity": 100,
+        "constraint_clarity": 75,
+        "workflow_reusability": 90,
+        "verification_strength": 70,
+        "output_specificity": 85,
+        "generalization_safety": 88
+      },
+      "diagnostics": [
+        "Skill 생성을 위한 핵심 계약 정보가 충분합니다."
+      ],
+      "install_readiness": {
+        "grade": "install_recommended",
+        "recommendation": "승인 후 바로 promote해도 좋습니다.",
+        "blockers": []
+      }
+    },
+    "better_prompt_templates": {
+      "minimal": "Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit. 대상은 [작업 대상]입니다. 완료 후 작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.; 확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다. 기준으로 확인하고 Release summary, Notable changes, Breaking changes or migrations, Validation, Risks or follow-ups 형식으로 요약해줘.",
+      "high_signal": "Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.; 확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Release summary, Notable changes, Breaking changes or migrations, Validation, Risks or follow-ups",
+      "clarifying": "이 요청은 `document` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘."
+    },
+    "clarifying_questions": [
+      "완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?",
+      "불확실한 정보가 있으면 작업 전에 질문해도 되나요?"
+    ],
+    "quality_checklist": [
+      "목표가 한 문장으로 명확한가?",
+      "작업 대상 또는 입력 자료가 명시됐는가?",
+      "수정 범위와 하지 말아야 할 일이 분리됐는가?",
+      "반복 가능한 절차가 순서대로 정의됐는가?",
+      "검증 방법과 완료 기준이 포함됐는가?",
+      "결과 출력 형식이 정해졌는가?",
+      "특정 파일명/브랜치/고객명에 과적합되지 않았는가?"
+    ],
+    "generalization_notes": [
+      "예시 프롬프트는 evidence로만 사용하고 Skill 본문에는 일반화된 패턴을 남긴다.",
+      "특정 파일명, URL, 브랜치, 날짜는 가능한 variable slot으로 취급한다.",
+      "한 번만 등장한 세부 조건은 고정 규칙이 아니라 확인 질문으로 전환한다."
+    ]
+  }
+}

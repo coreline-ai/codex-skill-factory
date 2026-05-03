@@ -1,8 +1,10 @@
 import json
+import pathlib
 
 from typer.testing import CliRunner
 
 from skill_factory.cli import app, build_candidates, render_report, render_skill
+from skill_factory.enrichment import enrich_candidate
 
 
 runner = CliRunner()
@@ -29,6 +31,40 @@ def test_render_skill_can_include_evidence():
     assert "# Failing Test Fixer" in rendered
     assert "## Evidence" in rendered
     assert "pytest 테스트 실패" in rendered
+
+
+def test_render_skill_uses_archetype_output_contract_when_enriched():
+    candidate = enrich_candidate(
+        {
+            "name": "generate-release-notes",
+            "title": "Release Notes Generator",
+            "description": "Use when generating release notes from changes.",
+            "goal": "Generate release notes from git changes.",
+            "frequency_total": 2,
+            "score": 70,
+            "example_prompts": ["generate release notes for the latest diff"],
+            "when_to_use": ["release notes 작성이 필요할 때"],
+            "when_not_to_use": ["변경 근거가 없을 때"],
+            "workflow": ["변경사항을 확인한다", "릴리즈 노트를 작성한다"],
+            "verification": ["diff 근거 확인"],
+            "anti_patterns": ["확인되지 않은 버전 작성 금지"],
+            "output_sections": [
+                "Release summary",
+                "Notable changes",
+                "Breaking changes or migrations",
+                "Validation",
+                "Risks or follow-ups",
+            ],
+            "status": "pending_review",
+            "source": "similarity",
+        }
+    )
+    rendered = render_skill(candidate, include_evidence=False, include_enriched=True)
+    output_section = rendered.split("## Output format", 1)[1].split("## Prompt quality guide", 1)[0]
+    assert "- Release summary" in output_section
+    assert "- Breaking changes or migrations" in output_section
+    assert "- Files touched" not in output_section
+    assert "## Install readiness" in rendered
 
 
 def test_render_report_empty_message():
@@ -165,6 +201,116 @@ def test_product_golden_path_project_scope(tmp_path):
 
     doctor_result = runner.invoke(app, ["doctor", "--repo", str(tmp_path)])
     assert doctor_result.exit_code == 0, doctor_result.output
+
+
+def test_init_merges_existing_hooks_and_backs_up(tmp_path):
+    codex_dir = tmp_path / ".codex"
+    codex_dir.mkdir()
+    hooks_file = codex_dir / "hooks.json"
+    hooks_file.write_text(
+        json.dumps(
+            {
+                "hooks": {
+                    "UserPromptSubmit": [
+                        {"hooks": [{"type": "command", "command": "custom-prompt-hook"}]}
+                    ],
+                    "PreToolUse": [
+                        {"hooks": [{"type": "command", "command": "custom-pre-tool-hook"}]}
+                    ],
+                },
+                "custom_top_level": True,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    init_result = runner.invoke(app, ["init", "--repo", str(tmp_path), "--yes"])
+    assert init_result.exit_code == 0, init_result.output
+    hooks = json.loads(hooks_file.read_text(encoding="utf-8"))
+    serialized = json.dumps(hooks, ensure_ascii=False)
+    assert hooks["custom_top_level"] is True
+    assert "custom-prompt-hook" in serialized
+    assert "custom-pre-tool-hook" in serialized
+    assert "codex-skill-factory hook-user-prompt --project" in serialized
+    assert (codex_dir / "hooks.json.bak").exists()
+
+    second_init = runner.invoke(app, ["init", "--repo", str(tmp_path), "--yes"])
+    assert second_init.exit_code == 0, second_init.output
+    hooks_after_second_init = json.loads(hooks_file.read_text(encoding="utf-8"))
+    serialized_after_second_init = json.dumps(hooks_after_second_init, ensure_ascii=False)
+    assert serialized_after_second_init.count("codex-skill-factory hook-user-prompt --project") == 1
+
+
+def test_inbox_auto_non_interactive_when_stdin_is_not_tty(tmp_path):
+    history_dir = tmp_path / ".codex-prompt-history"
+    skills_dir = tmp_path / ".codex" / "skills"
+    history_dir.mkdir(parents=True)
+    skills_dir.mkdir(parents=True)
+    (history_dir / "prompts.jsonl").write_text(
+        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in sample_prompts()),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["inbox", "--repo", str(tmp_path)])
+    assert result.exit_code == 0, result.output
+    candidates = json.loads(
+        (tmp_path / ".codex-skill-suggestions" / "candidates.json").read_text(encoding="utf-8")
+    )
+    assert candidates[0]["name"] == "fix-failing-tests"
+
+
+def test_hook_logs_redact_secrets_for_turns_and_tool_uses(tmp_path):
+    assert runner.invoke(app, ["init", "--repo", str(tmp_path), "--yes"]).exit_code == 0
+
+    stop_payload = {
+        "cwd": str(tmp_path),
+        "command": "pytest tests api_key=SECRET123",
+        "exit_code": 0,
+    }
+    stop_result = runner.invoke(
+        app,
+        ["hook-turn-stop", "--project"],
+        input=json.dumps(stop_payload),
+    )
+    assert stop_result.exit_code == 0, stop_result.output
+    turns_text = (tmp_path / ".codex-prompt-history" / "turns.jsonl").read_text(encoding="utf-8")
+    assert "[REDACTED_SECRET]" in turns_text
+    assert "SECRET123" not in turns_text
+
+    tool_payload = {
+        "cwd": str(tmp_path),
+        "command": "pytest tests",
+        "exit_code": 1,
+        "output": "FAILED password=SECRET123",
+    }
+    tool_result = runner.invoke(
+        app,
+        ["hook-post-tool-use", "--project"],
+        input=json.dumps(tool_payload),
+    )
+    assert tool_result.exit_code == 0, tool_result.output
+    tool_text = (tmp_path / ".codex-prompt-history" / "tool_uses.jsonl").read_text(
+        encoding="utf-8"
+    )
+    assert "[REDACTED_SECRET]" in tool_text
+    assert "SECRET123" not in tool_text
+
+
+def test_legacy_hook_scripts_delegate_to_cli_handlers():
+    repo_root = pathlib.Path(__file__).resolve().parents[3]
+    expected = {
+        "log_user_prompt.py": "codex-skill-factory\", \"hook-user-prompt\", \"--project",
+        "log_turn_stop.py": "codex-skill-factory\", \"hook-turn-stop\", \"--project",
+        "log_post_tool_use.py": "codex-skill-factory\", \"hook-post-tool-use\", \"--project",
+    }
+    for filename, command_snippet in expected.items():
+        text = (repo_root / ".codex" / "hooks" / filename).read_text(encoding="utf-8")
+        assert command_snippet in text
+        assert "SECRET_PATTERNS" not in text
+        assert "jsonl" not in text
 
 
 def test_doctor_returns_nonzero_when_not_initialized(tmp_path):

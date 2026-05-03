@@ -289,7 +289,7 @@ def handle_turn_stop(project: bool = False) -> int:
     repo_root, paths = hook_paths(payload, project)
     paths.history_dir.mkdir(parents=True, exist_ok=True)
     changed_files = get_changed_files(repo_root)
-    text = payload_text(payload)
+    text = redact_secrets(payload_text(payload))
     command = extract_command(payload)
     exit_code = extract_exit_code(payload)
     success = infer_success(payload, exit_code)

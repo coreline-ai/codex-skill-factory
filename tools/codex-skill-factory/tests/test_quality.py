@@ -14,6 +14,7 @@ def test_quality_detects_missing_verification():
     quality = compute_quality(candidate, spec)
     assert quality["dimensions"]["verification_strength"] < 70
     assert any("검증" in item for item in quality["diagnostics"])
+    assert quality["install_readiness"]["grade"] == "needs_improvement"
 
 
 def test_prompt_templates_are_generic_and_slot_based():
@@ -36,3 +37,4 @@ def test_enrich_quality_adds_questions_and_checklist():
     assert enriched["better_prompt_templates"]["high_signal"]
     assert enriched["clarifying_questions"]
     assert enriched["quality_checklist"]
+    assert enriched["prompt_quality"]["install_readiness"]["recommendation"]

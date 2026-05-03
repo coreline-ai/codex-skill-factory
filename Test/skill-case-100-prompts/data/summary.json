@@ -15,7 +15,7 @@
     "repo-to-infographic",
     "review-current-diff",
     "update-docs",
-    "similar-release-notes-changes"
+    "generate-release-notes"
   ],
   "generated_skill_count": 6,
   "installed_skill_count": 0,
@@ -59,12 +59,20 @@
     "lint_success_rate": 0.6667
   },
   "quality_scores": {
-    "fix-failing-tests": 87,
+    "fix-failing-tests": 89,
     "fix-lint-type-errors": 83,
     "repo-to-infographic": 78,
-    "review-current-diff": 73,
-    "update-docs": 75,
-    "similar-release-notes-changes": 79
+    "review-current-diff": 80,
+    "update-docs": 77,
+    "generate-release-notes": 85
+  },
+  "install_readiness": {
+    "fix-failing-tests": "install_recommended",
+    "fix-lint-type-errors": "review_recommended",
+    "repo-to-infographic": "review_recommended",
+    "review-current-diff": "review_recommended",
+    "update-docs": "review_recommended",
+    "generate-release-notes": "install_recommended"
   },
   "source_counts": {
     "rule": 5,

@@ -38,6 +38,7 @@ def render_dashboard_html(data: dict[str, Any]) -> str:
         example_html = "".join(f"<li>{html.escape(str(example))}</li>" for example in examples[:3])
         skill_spec = candidate.get("skill_spec") if isinstance(candidate.get("skill_spec"), dict) else {}
         quality = skill_spec.get("prompt_quality", {}) if skill_spec else {}
+        readiness = quality.get("install_readiness", {}) if quality else {}
         diagnostics = quality.get("diagnostics", []) if quality else []
         templates = skill_spec.get("better_prompt_templates", {}) if skill_spec else {}
         diagnostics_html = "".join(f"<li>{html.escape(str(item))}</li>" for item in diagnostics[:3])
@@ -57,6 +58,8 @@ def render_dashboard_html(data: dict[str, Any]) -> str:
             f"<p><b>Score</b> {html.escape(str(candidate.get('score', 0)))} · "
             f"<b>Frequency</b> {html.escape(str(candidate.get('frequency_total', 0)))} · "
             f"<b>Prompt Quality</b> {html.escape(str(quality.get('score', '-')))}</p>"
+            f"<p><b>Install Readiness</b> {html.escape(str(readiness.get('grade', '-')))}"
+            f"{' · ' + html.escape(str(readiness.get('recommendation', ''))) if readiness else ''}</p>"
             f"<ul>{example_html}</ul>"
             f"<ul class='diagnostics'>{diagnostics_html}</ul>"
             f"{prompt_html}"

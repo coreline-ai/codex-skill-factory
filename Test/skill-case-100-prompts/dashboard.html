@@ -54,7 +54,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 
   <section>
     <h2>Skill Candidates</h2>
-    <div class="candidates"><article class='candidate'><div><h3>fix-failing-tests</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to fix failing tests, CI failures, pytest/Jest errors, broken test suites, or red builds.</p><p><b>Score</b> 100 · <b>Frequency</b> 25 · <b>Prompt Quality</b> 87</p><ul><li>pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요</li><li>failing test in pytest needs fix and root cause analysis</li><li>CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘</li></ul><ul class='diagnostics'><li>Skill 생성을 위한 핵심 계약 정보가 충분합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Find the root cause of failing tests and apply the smallest safe fix. 대상은 [작업 대상]입니다. 완료 후 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Find the root cause of failing tests and apply the smallest safe fix.
+    <div class="candidates"><article class='candidate'><div><h3>fix-failing-tests</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to fix failing tests, CI failures, pytest/Jest errors, broken test suites, or red builds.</p><p><b>Score</b> 100 · <b>Frequency</b> 25 · <b>Prompt Quality</b> 89</p><p><b>Install Readiness</b> install_recommended · 승인 후 바로 promote해도 좋습니다.</p><ul><li>pytest 테스트 실패 고쳐줘. tests/test_api.py 타깃 테스트 재실행 필요</li><li>failing test in pytest needs fix and root cause analysis</li><li>CI 실패 red build야 broken test 원인 분석하고 최소 수정해줘</li></ul><ul class='diagnostics'><li>Skill 생성을 위한 핵심 계약 정보가 충분합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Find the root cause of failing tests and apply the smallest safe fix. 대상은 [작업 대상]입니다. 완료 후 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Find the root cause of failing tests and apply the smallest safe fix.
 
 대상:
 - [작업 대상]
@@ -70,7 +70,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Root cause, What changed, Files touched, Validation, Risks</pre></details><div class='commands'><code>codex-skill-factory promote fix-failing-tests --repo . --yes</code><code>codex-skill-factory preview fix-failing-tests --repo .</code><code>codex-skill-factory ignore fix-failing-tests --repo .</code></div></article><article class='candidate'><div><h3>fix-lint-type-errors</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to fix lint, formatting, typecheck, mypy, tsc, ruff, eslint, or static analysis errors.</p><p><b>Score</b> 100 · <b>Frequency</b> 20 · <b>Prompt Quality</b> 83</p><ul><li>ruff check 실패 lint 오류 수정해줘</li><li>mypy 타입 에러와 typecheck 실패를 고쳐줘</li><li>eslint prettier format 문제 정리해줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Fix lint and type errors with minimal behavior-changing edits. 대상은 [작업 대상]입니다. 완료 후 원래 실패한 명령을 다시 실행한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Fix lint and type errors with minimal behavior-changing edits.
+- Root cause, What changed, Files touched, Validation, Risks</pre></details><div class='commands'><code>codex-skill-factory promote fix-failing-tests --repo . --yes</code><code>codex-skill-factory preview fix-failing-tests --repo .</code><code>codex-skill-factory ignore fix-failing-tests --repo .</code></div></article><article class='candidate'><div><h3>fix-lint-type-errors</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to fix lint, formatting, typecheck, mypy, tsc, ruff, eslint, or static analysis errors.</p><p><b>Score</b> 100 · <b>Frequency</b> 20 · <b>Prompt Quality</b> 83</p><p><b>Install Readiness</b> review_recommended · preview에서 변수/검증 기준을 확인한 뒤 promote하세요.</p><ul><li>ruff check 실패 lint 오류 수정해줘</li><li>mypy 타입 에러와 typecheck 실패를 고쳐줘</li><li>eslint prettier format 문제 정리해줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Fix lint and type errors with minimal behavior-changing edits. 대상은 [작업 대상]입니다. 완료 후 원래 실패한 명령을 다시 실행한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Fix lint and type errors with minimal behavior-changing edits.
 
 대상:
 - [작업 대상]
@@ -86,7 +86,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Root cause, What changed, Files touched, Validation, Risks</pre></details><div class='commands'><code>codex-skill-factory promote fix-lint-type-errors --repo . --yes</code><code>codex-skill-factory preview fix-lint-type-errors --repo .</code><code>codex-skill-factory ignore fix-lint-type-errors --repo .</code></div></article><article class='candidate'><div><h3>repo-to-infographic</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to analyze a GitHub repository and create a concise 16:9 infographic brief or image-generation prompt.</p><p><b>Score</b> 100 · <b>Frequency</b> 10 · <b>Prompt Quality</b> 78</p><ul><li>GitHub 저장소 분석해서 16:9 인포그래픽 이미지 프롬프트 만들어줘</li><li>레포 분석 후 상세하고 간략한 스타일 적용 인포그래픽 설계</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Turn repository information into a clear, attractive, accurate infographic plan.
+- Root cause, What changed, Files touched, Validation, Risks</pre></details><div class='commands'><code>codex-skill-factory promote fix-lint-type-errors --repo . --yes</code><code>codex-skill-factory preview fix-lint-type-errors --repo .</code><code>codex-skill-factory ignore fix-lint-type-errors --repo .</code></div></article><article class='candidate'><div><h3>repo-to-infographic</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to analyze a GitHub repository and create a concise 16:9 infographic brief or image-generation prompt.</p><p><b>Score</b> 100 · <b>Frequency</b> 10 · <b>Prompt Quality</b> 78</p><p><b>Install Readiness</b> review_recommended · preview에서 변수/검증 기준을 확인한 뒤 promote하세요.</p><ul><li>GitHub 저장소 분석해서 16:9 인포그래픽 이미지 프롬프트 만들어줘</li><li>레포 분석 후 상세하고 간략한 스타일 적용 인포그래픽 설계</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Deliverable, Inputs used, Key decisions, Validation, Follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Turn repository information into a clear, attractive, accurate infographic plan.
 
 대상:
 - [작업 대상]
@@ -102,7 +102,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Summary, Inputs, Actions, Validation, Risks or follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote repo-to-infographic --repo . --yes</code><code>codex-skill-factory preview repo-to-infographic --repo .</code><code>codex-skill-factory ignore repo-to-infographic --repo .</code></div></article><article class='candidate'><div><h3>review-current-diff</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to review the current git diff, PR changes, code changes, or wants risk and bug analysis before committing.</p><p><b>Score</b> 100 · <b>Frequency</b> 20 · <b>Prompt Quality</b> 73</p><ul><li>현재 diff 리뷰하고 PR 전 위험 검토해줘</li><li>review this current git diff before merge</li><li>변경사항 검토하고 누락 테스트와 회귀 위험 찾아줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li><li>수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.</li><li>검증 기준이나 실행 명령이 부족합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Review the current changes for correctness, risk, maintainability, and missing tests. 대상은 [작업 대상]입니다. 완료 후 diff 근거로만 리뷰한다. 기준으로 확인하고 Findings, Evidence, Risk level, Suggested fixes, Missing tests 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Review the current changes for correctness, risk, maintainability, and missing tests.
+- Deliverable, Inputs used, Key decisions, Validation, Follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote repo-to-infographic --repo . --yes</code><code>codex-skill-factory preview repo-to-infographic --repo .</code><code>codex-skill-factory ignore repo-to-infographic --repo .</code></div></article><article class='candidate'><div><h3>review-current-diff</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to review the current git diff, PR changes, code changes, or wants risk and bug analysis before committing.</p><p><b>Score</b> 100 · <b>Frequency</b> 20 · <b>Prompt Quality</b> 80</p><p><b>Install Readiness</b> review_recommended · preview에서 변수/검증 기준을 확인한 뒤 promote하세요.</p><ul><li>현재 diff 리뷰하고 PR 전 위험 검토해줘</li><li>review this current git diff before merge</li><li>변경사항 검토하고 누락 테스트와 회귀 위험 찾아줘</li></ul><ul class='diagnostics'><li>수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.</li><li>검증 기준이나 실행 명령이 부족합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Review the current changes for correctness, risk, maintainability, and missing tests. 대상은 [작업 대상]입니다. 완료 후 diff 근거로만 리뷰한다. 기준으로 확인하고 Findings, Evidence, Risk level, Suggested fixes, Missing tests 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Review the current changes for correctness, risk, maintainability, and missing tests.
 
 대상:
 - [작업 대상]
@@ -118,7 +118,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Findings, Evidence, Risk level, Suggested fixes, Missing tests</pre></details><div class='commands'><code>codex-skill-factory promote review-current-diff --repo . --yes</code><code>codex-skill-factory preview review-current-diff --repo .</code><code>codex-skill-factory ignore review-current-diff --repo .</code></div></article><article class='candidate'><div><h3>update-docs</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to update README, docs, API documentation, usage guides, or changelog-like documentation.</p><p><b>Score</b> 100 · <b>Frequency</b> 15 · <b>Prompt Quality</b> 75</p><ul><li>README 문서 업데이트하고 사용법 가이드 정리해줘</li><li>docs documentation 사용법을 README에 추가하고 changelog 정리</li><li>문서 설명 추가하고 설치 실행 예시를 최신 상태로 맞춰줘</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li><li>수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.</li><li>검증 기준이나 실행 명령이 부족합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Update documentation so it accurately reflects the current project behavior.
+- Findings, Evidence, Risk level, Suggested fixes, Missing tests</pre></details><div class='commands'><code>codex-skill-factory promote review-current-diff --repo . --yes</code><code>codex-skill-factory preview review-current-diff --repo .</code><code>codex-skill-factory ignore review-current-diff --repo .</code></div></article><article class='candidate'><div><h3>update-docs</h3><span class='pill pending_review'>pending_review</span><span class='pill'>rule</span></div><p>Use when the user asks to update README, docs, API documentation, usage guides, or changelog-like documentation.</p><p><b>Score</b> 100 · <b>Frequency</b> 15 · <b>Prompt Quality</b> 77</p><p><b>Install Readiness</b> review_recommended · preview에서 변수/검증 기준을 확인한 뒤 promote하세요.</p><ul><li>README 문서 업데이트하고 사용법 가이드 정리해줘</li><li>docs documentation 사용법을 README에 추가하고 changelog 정리</li><li>문서 설명 추가하고 설치 실행 예시를 최신 상태로 맞춰줘</li></ul><ul class='diagnostics'><li>수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.</li><li>검증 기준이나 실행 명령이 부족합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Update documentation so it accurately reflects the current project behavior.
 
 대상:
 - [작업 대상]
@@ -134,7 +134,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Audience, Updated sections, Examples, Validation, Follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote update-docs --repo . --yes</code><code>codex-skill-factory preview update-docs --repo .</code><code>codex-skill-factory ignore update-docs --repo .</code></div></article><article class='candidate'><div><h3>similar-release-notes-changes</h3><span class='pill pending_review'>pending_review</span><span class='pill'>similarity</span></div><p>Use when the user repeatedly asks semantically similar requests represented by this prompt cluster (10 examples).</p><p><b>Score</b> 100 · <b>Frequency</b> 10 · <b>Prompt Quality</b> 79</p><ul><li>prepare release notes from current commits and summarize notable changes</li><li>generate release summary from git commits with breaking changes and migration notes</li><li>write a release announcement from merged commits and categorize changes</li></ul><ul class='diagnostics'><li>입력 대상이 예시에서 충분히 명확하지 않습니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill. 대상은 [작업 대상]입니다. 완료 후 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.
+- Audience, Updated sections, Examples, Validation, Follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote update-docs --repo . --yes</code><code>codex-skill-factory preview update-docs --repo .</code><code>codex-skill-factory ignore update-docs --repo .</code></div></article><article class='candidate'><div><h3>generate-release-notes</h3><span class='pill pending_review'>pending_review</span><span class='pill'>similarity</span></div><p>Use when the user repeatedly asks to generate release notes from commits, diffs, PRs, or git changes (10 similar examples).</p><p><b>Score</b> 100 · <b>Frequency</b> 10 · <b>Prompt Quality</b> 85</p><p><b>Install Readiness</b> install_recommended · 승인 후 바로 promote해도 좋습니다.</p><ul><li>make version release notes based on commit history and user visible changes</li><li>draft release communication using commit messages and upgrade notes</li><li>write a release announcement from merged commits and categorize changes</li></ul><ul class='diagnostics'><li>Skill 생성을 위한 핵심 계약 정보가 충분합니다.</li></ul><details><summary>Better prompt templates</summary><p><b>Minimal</b></p><pre>Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit. 대상은 [작업 대상]입니다. 완료 후 작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.; 확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다. 기준으로 확인하고 Release summary, Notable changes, Breaking changes or migrations, Validation, Risks or follow-ups 형식으로 요약해줘.</pre><p><b>High-signal</b></p><pre>Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.
 
 대상:
 - [작업 대상]
@@ -146,11 +146,11 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
 절차:
 1. 먼저 목표, 입력, 현재 상태를 확인해줘.
 2. 필요한 최소 범위로 작업해줘.
-3. 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 검증해줘.
+3. 작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.; 확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다. 기준으로 검증해줘.
 4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.
 
 출력:
-- Summary, Inputs, Actions, Validation, Risks or follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote similar-release-notes-changes --repo . --yes</code><code>codex-skill-factory preview similar-release-notes-changes --repo .</code><code>codex-skill-factory ignore similar-release-notes-changes --repo .</code></div></article></div>
+- Release summary, Notable changes, Breaking changes or migrations, Validation, Risks or follow-ups</pre></details><div class='commands'><code>codex-skill-factory promote generate-release-notes --repo . --yes</code><code>codex-skill-factory preview generate-release-notes --repo .</code><code>codex-skill-factory ignore generate-release-notes --repo .</code></div></article></div>
   </section>
 
   <section class="panel">
@@ -162,7 +162,7 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
     <h2>Raw Dashboard Data</h2>
     <pre>{
   &quot;analytics&quot;: {
-    &quot;generated_at&quot;: &quot;2026-05-03T04:50:28.933701+00:00&quot;,
+    &quot;generated_at&quot;: &quot;2026-05-03T05:24:33.608053+00:00&quot;,
     &quot;summary&quot;: {
       &quot;total_prompts&quot;: 100,
       &quot;total_turns&quot;: 12,
@@ -225,6 +225,13 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           &quot;frequency_total&quot;: 20
         },
         {
+          &quot;name&quot;: &quot;generate-release-notes&quot;,
+          &quot;status&quot;: &quot;pending_review&quot;,
+          &quot;source&quot;: &quot;similarity&quot;,
+          &quot;score&quot;: 100,
+          &quot;frequency_total&quot;: 10
+        },
+        {
           &quot;name&quot;: &quot;repo-to-infographic&quot;,
           &quot;status&quot;: &quot;pending_review&quot;,
           &quot;source&quot;: &quot;rule&quot;,
@@ -237,13 +244,6 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           &quot;source&quot;: &quot;rule&quot;,
           &quot;score&quot;: 100,
           &quot;frequency_total&quot;: 20
-        },
-        {
-          &quot;name&quot;: &quot;similar-release-notes-changes&quot;,
-          &quot;status&quot;: &quot;pending_review&quot;,
-          &quot;source&quot;: &quot;similarity&quot;,
-          &quot;score&quot;: 100,
-          &quot;frequency_total&quot;: 10
         },
         {
           &quot;name&quot;: &quot;update-docs&quot;,
@@ -421,7 +421,8 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
             &quot;required&quot;: true,
             &quot;evidence&quot;: [
-              &quot;tests/test_api.py&quot;
+              &quot;tests/test_api.py&quot;,
+              &quot;로그&quot;
             ],
             &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
           },
@@ -515,10 +516,10 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           ]
         },
         &quot;prompt_quality&quot;: {
-          &quot;score&quot;: 87,
+          &quot;score&quot;: 89,
           &quot;dimensions&quot;: {
             &quot;intent_clarity&quot;: 90,
-            &quot;input_specificity&quot;: 70,
+            &quot;input_specificity&quot;: 85,
             &quot;constraint_clarity&quot;: 75,
             &quot;workflow_reusability&quot;: 100,
             &quot;verification_strength&quot;: 100,
@@ -527,7 +528,12 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           },
           &quot;diagnostics&quot;: [
             &quot;Skill 생성을 위한 핵심 계약 정보가 충분합니다.&quot;
-          ]
+          ],
+          &quot;install_readiness&quot;: {
+            &quot;grade&quot;: &quot;install_recommended&quot;,
+            &quot;recommendation&quot;: &quot;승인 후 바로 promote해도 좋습니다.&quot;,
+            &quot;blockers&quot;: []
+          }
         },
         &quot;better_prompt_templates&quot;: {
           &quot;minimal&quot;: &quot;Find the root cause of failing tests and apply the smallest safe fix. 대상은 [작업 대상]입니다. 완료 후 수정 전 실패를 재현했는지 확인한다.; 수정 후 타깃 테스트가 통과했는지 확인한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.&quot;,
@@ -535,7 +541,6 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           &quot;clarifying&quot;: &quot;이 요청은 `fix` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
         },
         &quot;clarifying_questions&quot;: [
-          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
           &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
         ],
         &quot;quality_checklist&quot;: [
@@ -710,7 +715,14 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           },
           &quot;diagnostics&quot;: [
             &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;
-          ]
+          ],
+          &quot;install_readiness&quot;: {
+            &quot;grade&quot;: &quot;review_recommended&quot;,
+            &quot;recommendation&quot;: &quot;preview에서 변수/검증 기준을 확인한 뒤 promote하세요.&quot;,
+            &quot;blockers&quot;: [
+              &quot;작업 대상 신호가 부족합니다.&quot;
+            ]
+          }
         },
         &quot;better_prompt_templates&quot;: {
           &quot;minimal&quot;: &quot;Fix lint and type errors with minimal behavior-changing edits. 대상은 [작업 대상]입니다. 완료 후 원래 실패한 명령을 다시 실행한다. 기준으로 확인하고 Root cause, What changed, Files touched, Validation, Risks 형식으로 요약해줘.&quot;,
@@ -845,11 +857,11 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           &quot;output&quot;: {
             &quot;format&quot;: &quot;structured_summary&quot;,
             &quot;required_sections&quot;: [
-              &quot;Summary&quot;,
-              &quot;Inputs&quot;,
-              &quot;Actions&quot;,
+              &quot;Deliverable&quot;,
+              &quot;Inputs used&quot;,
+              &quot;Key decisions&quot;,
               &quot;Validation&quot;,
-              &quot;Risks or follow-ups&quot;
+              &quot;Follow-ups&quot;
             ]
           }
         },
@@ -867,11 +879,11 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
         &quot;output_contract&quot;: {
           &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
           &quot;required_sections&quot;: [
-            &quot;Summary&quot;,
-            &quot;Inputs&quot;,
-            &quot;Actions&quot;,
+            &quot;Deliverable&quot;,
+            &quot;Inputs used&quot;,
+            &quot;Key decisions&quot;,
             &quot;Validation&quot;,
-            &quot;Risks or follow-ups&quot;
+            &quot;Follow-ups&quot;
           ]
         },
         &quot;prompt_quality&quot;: {
@@ -887,11 +899,18 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           },
           &quot;diagnostics&quot;: [
             &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;
-          ]
+          ],
+          &quot;install_readiness&quot;: {
+            &quot;grade&quot;: &quot;review_recommended&quot;,
+            &quot;recommendation&quot;: &quot;preview에서 변수/검증 기준을 확인한 뒤 promote하세요.&quot;,
+            &quot;blockers&quot;: [
+              &quot;작업 대상 신호가 부족합니다.&quot;
+            ]
+          }
         },
         &quot;better_prompt_templates&quot;: {
-          &quot;minimal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.&quot;,
-          &quot;high_signal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Summary, Inputs, Actions, Validation, Risks or follow-ups&quot;,
+          &quot;minimal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan. 대상은 [작업 대상]입니다. 완료 후 README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 확인하고 Deliverable, Inputs used, Key decisions, Validation, Follow-ups 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Turn repository information into a clear, attractive, accurate infographic plan.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. README에서 확인한 사실만 핵심 수치로 사용한다.; 텍스트가 이미지에서 읽기 쉬운 길이인지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Deliverable, Inputs used, Key decisions, Validation, Follow-ups&quot;,
           &quot;clarifying&quot;: &quot;이 요청은 `create` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
         },
         &quot;clarifying_questions&quot;: [
@@ -966,7 +985,11 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;name&quot;: &quot;target&quot;,
             &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
             &quot;required&quot;: true,
-            &quot;evidence&quot;: [],
+            &quot;evidence&quot;: [
+              &quot;diff&quot;,
+              &quot;Current Diff&quot;,
+              &quot;변경사항&quot;
+            ],
             &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
           },
           {
@@ -1048,10 +1071,10 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           ]
         },
         &quot;prompt_quality&quot;: {
-          &quot;score&quot;: 73,
+          &quot;score&quot;: 80,
           &quot;dimensions&quot;: {
             &quot;intent_clarity&quot;: 90,
-            &quot;input_specificity&quot;: 55,
+            &quot;input_specificity&quot;: 100,
             &quot;constraint_clarity&quot;: 60,
             &quot;workflow_reusability&quot;: 80,
             &quot;verification_strength&quot;: 55,
@@ -1059,10 +1082,16 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;generalization_safety&quot;: 88
           },
           &quot;diagnostics&quot;: [
-            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;,
             &quot;수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.&quot;,
             &quot;검증 기준이나 실행 명령이 부족합니다.&quot;
-          ]
+          ],
+          &quot;install_readiness&quot;: {
+            &quot;grade&quot;: &quot;review_recommended&quot;,
+            &quot;recommendation&quot;: &quot;preview에서 변수/검증 기준을 확인한 뒤 promote하세요.&quot;,
+            &quot;blockers&quot;: [
+              &quot;검증 기준이 부족합니다.&quot;
+            ]
+          }
         },
         &quot;better_prompt_templates&quot;: {
           &quot;minimal&quot;: &quot;Review the current changes for correctness, risk, maintainability, and missing tests. 대상은 [작업 대상]입니다. 완료 후 diff 근거로만 리뷰한다. 기준으로 확인하고 Findings, Evidence, Risk level, Suggested fixes, Missing tests 형식으로 요약해줘.&quot;,
@@ -1070,7 +1099,6 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           &quot;clarifying&quot;: &quot;이 요청은 `review` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
         },
         &quot;clarifying_questions&quot;: [
-          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
           &quot;반드시 지켜야 할 범위, 금지사항, 스타일 또는 호환성 조건이 있나요?&quot;,
           &quot;완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?&quot;,
           &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
@@ -1142,7 +1170,9 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;name&quot;: &quot;target&quot;,
             &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
             &quot;required&quot;: true,
-            &quot;evidence&quot;: [],
+            &quot;evidence&quot;: [
+              &quot;README&quot;
+            ],
             &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
           },
           {
@@ -1226,10 +1256,10 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           ]
         },
         &quot;prompt_quality&quot;: {
-          &quot;score&quot;: 75,
+          &quot;score&quot;: 77,
           &quot;dimensions&quot;: {
             &quot;intent_clarity&quot;: 90,
-            &quot;input_specificity&quot;: 55,
+            &quot;input_specificity&quot;: 70,
             &quot;constraint_clarity&quot;: 60,
             &quot;workflow_reusability&quot;: 90,
             &quot;verification_strength&quot;: 55,
@@ -1237,10 +1267,16 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;generalization_safety&quot;: 88
           },
           &quot;diagnostics&quot;: [
-            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;,
             &quot;수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.&quot;,
             &quot;검증 기준이나 실행 명령이 부족합니다.&quot;
-          ]
+          ],
+          &quot;install_readiness&quot;: {
+            &quot;grade&quot;: &quot;review_recommended&quot;,
+            &quot;recommendation&quot;: &quot;preview에서 변수/검증 기준을 확인한 뒤 promote하세요.&quot;,
+            &quot;blockers&quot;: [
+              &quot;검증 기준이 부족합니다.&quot;
+            ]
+          }
         },
         &quot;better_prompt_templates&quot;: {
           &quot;minimal&quot;: &quot;Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.&quot;,
@@ -1270,73 +1306,92 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
       }
     },
     {
-      &quot;name&quot;: &quot;similar-release-notes-changes&quot;,
-      &quot;title&quot;: &quot;Similar Prompt Cluster: release, notes, changes&quot;,
-      &quot;description&quot;: &quot;Use when the user repeatedly asks semantically similar requests represented by this prompt cluster (10 examples).&quot;,
+      &quot;name&quot;: &quot;generate-release-notes&quot;,
+      &quot;title&quot;: &quot;Release Notes Generator&quot;,
+      &quot;description&quot;: &quot;Use when the user repeatedly asks to generate release notes from commits, diffs, PRs, or git changes (10 similar examples).&quot;,
       &quot;score&quot;: 100,
       &quot;frequency_total&quot;: 10,
       &quot;example_prompts&quot;: [
-        &quot;prepare release notes from current commits and summarize notable changes&quot;,
-        &quot;generate release summary from git commits with breaking changes and migration notes&quot;,
-        &quot;write a release announcement from merged commits and categorize changes&quot;,
         &quot;make version release notes based on commit history and user visible changes&quot;,
-        &quot;draft release communication using commit messages and upgrade notes&quot;
+        &quot;draft release communication using commit messages and upgrade notes&quot;,
+        &quot;write a release announcement from merged commits and categorize changes&quot;,
+        &quot;generate release summary from git commits with breaking changes and migration notes&quot;,
+        &quot;prepare release notes from current commits and summarize notable changes&quot;
       ],
       &quot;when_to_use&quot;: [
-        &quot;유사한 프롬프트가 반복되어 절차화된 Skill 후보가 필요할 때&quot;,
-        &quot;키워드 규칙으로는 잡히지 않지만 의미상 같은 작업이 반복될 때&quot;
+        &quot;release notes from commits, diffs, PRs, or git changes 요청이 반복되고 입력 대상만 달라질 때&quot;,
+        &quot;Release Notes 작업을 같은 절차와 출력 형식으로 자주 처리해야 할 때&quot;
       ],
       &quot;when_not_to_use&quot;: [
-        &quot;예시 프롬프트들이 서로 다른 목표를 갖는 경우&quot;,
-        &quot;한 저장소나 특정 고객명에만 강하게 의존하는 경우&quot;
+        &quot;예시 프롬프트들이 서로 다른 목표나 산출물을 요구하는 경우&quot;,
+        &quot;한 저장소, 고객명, 파일명, 비밀값에만 강하게 의존해 일반화할 수 없는 경우&quot;
       ],
-      &quot;goal&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.&quot;,
+      &quot;goal&quot;: &quot;Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.&quot;,
       &quot;workflow&quot;: [
-        &quot;대표 예시 프롬프트들을 검토한다.&quot;,
-        &quot;공통 목표와 반복 절차를 추출한다.&quot;,
-        &quot;프로젝트 고유 정보나 민감정보를 제거한다.&quot;,
-        &quot;검증 방법과 금지 사항을 명확히 작성한다.&quot;,
-        &quot;생성 전 사람이 후보를 승인한다.&quot;
+        &quot;대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.&quot;,
+        &quot;변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.&quot;,
+        &quot;사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.&quot;,
+        &quot;버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.&quot;,
+        &quot;최종 release notes와 검증/리스크를 요청된 형식으로 정리한다.&quot;
       ],
       &quot;verification&quot;: [
-        &quot;예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.&quot;,
-        &quot;생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.&quot;
+        &quot;작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.&quot;,
+        &quot;확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다.&quot;
       ],
       &quot;anti_patterns&quot;: [
-        &quot;유사도 점수만 보고 자동 생성하지 않는다.&quot;,
-        &quot;서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.&quot;
+        &quot;커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.&quot;,
+        &quot;확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다.&quot;
+      ],
+      &quot;output_sections&quot;: [
+        &quot;Release summary&quot;,
+        &quot;Notable changes&quot;,
+        &quot;Breaking changes or migrations&quot;,
+        &quot;Validation&quot;,
+        &quot;Risks or follow-ups&quot;
       ],
       &quot;status&quot;: &quot;pending_review&quot;,
       &quot;source&quot;: &quot;similarity&quot;,
       &quot;similarity&quot;: {
-        &quot;cluster_id&quot;: &quot;similar-8c5c8e33&quot;,
-        &quot;average_similarity&quot;: 0.2868,
-        &quot;threshold&quot;: 0.18,
+        &quot;cluster_id&quot;: &quot;similar-e03ae762&quot;,
+        &quot;average_similarity&quot;: 1.0,
+        &quot;threshold&quot;: 0.52,
         &quot;top_terms&quot;: [
           &quot;release&quot;,
           &quot;notes&quot;,
           &quot;changes&quot;,
           &quot;from&quot;
-        ]
+        ],
+        &quot;intent_profile&quot;: {
+          &quot;action&quot;: &quot;generate&quot;,
+          &quot;domain&quot;: &quot;release-notes&quot;,
+          &quot;domain_label&quot;: &quot;Release Notes&quot;
+        },
+        &quot;merged_cluster_count&quot;: 5
       },
       &quot;skill_spec&quot;: {
         &quot;schema_version&quot;: &quot;1.0&quot;,
-        &quot;task_archetype&quot;: &quot;create&quot;,
-        &quot;intent_invariant&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.&quot;,
+        &quot;task_archetype&quot;: &quot;document&quot;,
+        &quot;intent_invariant&quot;: &quot;Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.&quot;,
         &quot;top_terms&quot;: [
           &quot;release&quot;,
           &quot;notes&quot;,
           &quot;changes&quot;,
-          &quot;skill&quot;,
-          &quot;prompt&quot;,
-          &quot;from&quot;
+          &quot;from&quot;,
+          &quot;commits&quot;,
+          &quot;git&quot;
         ],
         &quot;variable_slots&quot;: [
           {
             &quot;name&quot;: &quot;target&quot;,
             &quot;description&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
             &quot;required&quot;: true,
-            &quot;evidence&quot;: [],
+            &quot;evidence&quot;: [
+              &quot;commits&quot;,
+              &quot;git changes&quot;,
+              &quot;commit&quot;,
+              &quot;current commits&quot;,
+              &quot;diff&quot;
+            ],
             &quot;default_placeholder&quot;: &quot;[작업 대상]&quot;
           },
           {
@@ -1344,8 +1399,8 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;description&quot;: &quot;수정 범위, 금지사항, 스타일, 호환성 조건, 제외 범위&quot;,
             &quot;required&quot;: false,
             &quot;evidence&quot;: [
-              &quot;유사도 점수만 보고 자동 생성하지 않는다.&quot;,
-              &quot;서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.&quot;
+              &quot;커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.&quot;,
+              &quot;확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다.&quot;
             ],
             &quot;default_placeholder&quot;: &quot;[제약사항]&quot;
           },
@@ -1354,8 +1409,8 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;description&quot;: &quot;테스트, lint, 빌드, 수동 확인 등 완료 여부를 판단할 기준&quot;,
             &quot;required&quot;: true,
             &quot;evidence&quot;: [
-              &quot;예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.&quot;,
-              &quot;생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.&quot;
+              &quot;작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.&quot;,
+              &quot;확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다.&quot;
             ],
             &quot;default_placeholder&quot;: &quot;[검증 기준]&quot;
           },
@@ -1372,41 +1427,41 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
           &quot;완료 여부를 판단할 검증 기준이 있어야 한다.&quot;
         ],
         &quot;prompt_contract&quot;: {
-          &quot;intent&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.&quot;,
+          &quot;intent&quot;: &quot;Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.&quot;,
           &quot;input&quot;: &quot;작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위&quot;,
           &quot;context&quot;: &quot;후보 예시와 반복 빈도에서 추출한 공통 작업 맥락을 사용한다.&quot;,
           &quot;constraints&quot;: [
-            &quot;유사도 점수만 보고 자동 생성하지 않는다.&quot;,
-            &quot;서로 다른 목적의 프롬프트를 하나의 Skill로 합치지 않는다.&quot;
+            &quot;커밋 메시지만 보고 사용자 영향도나 breaking change를 과장하지 않는다.&quot;,
+            &quot;확인되지 않은 릴리즈 날짜, 버전, 고객명을 고정값으로 쓰지 않는다.&quot;
           ],
           &quot;workflow&quot;: [
-            &quot;대표 예시 프롬프트들을 검토한다.&quot;,
-            &quot;공통 목표와 반복 절차를 추출한다.&quot;,
-            &quot;프로젝트 고유 정보나 민감정보를 제거한다.&quot;,
-            &quot;검증 방법과 금지 사항을 명확히 작성한다.&quot;,
-            &quot;생성 전 사람이 후보를 승인한다.&quot;
+            &quot;대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.&quot;,
+            &quot;변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.&quot;,
+            &quot;사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.&quot;,
+            &quot;버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.&quot;,
+            &quot;최종 release notes와 검증/리스크를 요청된 형식으로 정리한다.&quot;
           ],
           &quot;verification&quot;: [
-            &quot;예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.&quot;,
-            &quot;생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다.&quot;
+            &quot;작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.&quot;,
+            &quot;확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다.&quot;
           ],
           &quot;output&quot;: {
             &quot;format&quot;: &quot;structured_summary&quot;,
             &quot;required_sections&quot;: [
-              &quot;Summary&quot;,
-              &quot;Inputs&quot;,
-              &quot;Actions&quot;,
+              &quot;Release summary&quot;,
+              &quot;Notable changes&quot;,
+              &quot;Breaking changes or migrations&quot;,
               &quot;Validation&quot;,
               &quot;Risks or follow-ups&quot;
             ]
           }
         },
         &quot;workflow_pattern&quot;: [
-          &quot;대표 예시 프롬프트들을 검토한다.&quot;,
-          &quot;공통 목표와 반복 절차를 추출한다.&quot;,
-          &quot;프로젝트 고유 정보나 민감정보를 제거한다.&quot;,
-          &quot;검증 방법과 금지 사항을 명확히 작성한다.&quot;,
-          &quot;생성 전 사람이 후보를 승인한다.&quot;
+          &quot;대상 commit range, diff, PR 목록, 변경 요약 중 사용 가능한 입력을 확인한다.&quot;,
+          &quot;변경사항을 기능, 수정, 문서, 내부 변경, breaking change로 분류한다.&quot;,
+          &quot;사용자에게 의미 있는 변경만 간결한 release note 문장으로 재작성한다.&quot;,
+          &quot;버전, 날짜, migration note, known issue가 불명확하면 추정하지 말고 질문 또는 미확인으로 표시한다.&quot;,
+          &quot;최종 release notes와 검증/리스크를 요청된 형식으로 정리한다.&quot;
         ],
         &quot;risk_controls&quot;: [
           &quot;특정 파일명, 브랜치, 고객명, 날짜는 가능한 변수로 취급한다.&quot;,
@@ -1416,18 +1471,18 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
         &quot;output_contract&quot;: {
           &quot;format&quot;: &quot;summary + evidence + validation + risks&quot;,
           &quot;required_sections&quot;: [
-            &quot;Summary&quot;,
-            &quot;Inputs&quot;,
-            &quot;Actions&quot;,
+            &quot;Release summary&quot;,
+            &quot;Notable changes&quot;,
+            &quot;Breaking changes or migrations&quot;,
             &quot;Validation&quot;,
             &quot;Risks or follow-ups&quot;
           ]
         },
         &quot;prompt_quality&quot;: {
-          &quot;score&quot;: 79,
+          &quot;score&quot;: 85,
           &quot;dimensions&quot;: {
             &quot;intent_clarity&quot;: 90,
-            &quot;input_specificity&quot;: 55,
+            &quot;input_specificity&quot;: 100,
             &quot;constraint_clarity&quot;: 75,
             &quot;workflow_reusability&quot;: 90,
             &quot;verification_strength&quot;: 70,
@@ -1435,16 +1490,20 @@ table { width: 100%; border-collapse: collapse; } td, th { border-bottom: 1px so
             &quot;generalization_safety&quot;: 88
           },
           &quot;diagnostics&quot;: [
-            &quot;입력 대상이 예시에서 충분히 명확하지 않습니다.&quot;
-          ]
+            &quot;Skill 생성을 위한 핵심 계약 정보가 충분합니다.&quot;
+          ],
+          &quot;install_readiness&quot;: {
+            &quot;grade&quot;: &quot;install_recommended&quot;,
+            &quot;recommendation&quot;: &quot;승인 후 바로 promote해도 좋습니다.&quot;,
+            &quot;blockers&quot;: []
+          }
         },
         &quot;better_prompt_templates&quot;: {
-          &quot;minimal&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill. 대상은 [작업 대상]입니다. 완료 후 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 확인하고 Summary, Inputs, Actions, Validation, Risks or follow-ups 형식으로 요약해줘.&quot;,
-          &quot;high_signal&quot;: &quot;Turn a repeated semantic prompt pattern into a reusable, verified Codex Skill.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 예시 프롬프트들이 같은 Skill로 처리 가능한지 확인한다.; 생성된 Skill이 특정 파일/고객/비밀값에 의존하지 않는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Summary, Inputs, Actions, Validation, Risks or follow-ups&quot;,
-          &quot;clarifying&quot;: &quot;이 요청은 `create` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
+          &quot;minimal&quot;: &quot;Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit. 대상은 [작업 대상]입니다. 완료 후 작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.; 확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다. 기준으로 확인하고 Release summary, Notable changes, Breaking changes or migrations, Validation, Risks or follow-ups 형식으로 요약해줘.&quot;,
+          &quot;high_signal&quot;: &quot;Generate release notes from commits, diffs, PRs, or git changes with a repeatable workflow that keeps target, constraints, verification, and output expectations explicit.\n\n대상:\n- [작업 대상]\n\n제약:\n- [수정 범위와 금지사항]\n- 확인하지 않은 사실은 단정하지 않기\n\n절차:\n1. 먼저 목표, 입력, 현재 상태를 확인해줘.\n2. 필요한 최소 범위로 작업해줘.\n3. 작성한 항목이 제공된 diff, commit, PR, changelog 입력에서 근거를 찾을 수 있는지 확인한다.; 확인되지 않은 버전, 날짜, 사용자 영향도를 임의로 추가하지 않았는지 확인한다. 기준으로 검증해줘.\n4. 실패나 불확실성이 있으면 원인과 후속 조치를 적어줘.\n\n출력:\n- Release summary, Notable changes, Breaking changes or migrations, Validation, Risks or follow-ups&quot;,
+          &quot;clarifying&quot;: &quot;이 요청은 `document` 유형으로 보입니다. 작업 전에 대상, 제약, 검증 기준, 출력 형식이 불명확하면 먼저 질문해줘.&quot;
         },
         &quot;clarifying_questions&quot;: [
-          &quot;작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?&quot;,
           &quot;완료 여부는 어떤 테스트, lint, 빌드, 수동 확인으로 검증하면 되나요?&quot;,
           &quot;불확실한 정보가 있으면 작업 전에 질문해도 되나요?&quot;
         ],

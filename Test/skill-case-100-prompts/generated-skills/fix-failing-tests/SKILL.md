@@ -39,11 +39,11 @@ Find the root cause of failing tests and apply the smallest safe fix.
 
 ## Output format
 
+- Root cause
 - What changed
 - Files touched
-- Commands run
-- Validation result
-- Risks or follow-ups
+- Validation
+- Risks
 
 ## Prompt quality guide
 
@@ -106,7 +106,6 @@ Find the root cause of failing tests and apply the smallest safe fix.
 
 ## Ask when unclear
 
-- 작업 대상 파일, diff, 로그, URL, 문서는 무엇인가요?
 - 불확실한 정보가 있으면 작업 전에 질문해도 되나요?
 
 ## Quality checklist
@@ -128,14 +127,19 @@ Find the root cause of failing tests and apply the smallest safe fix.
 
 ## Prompt quality score
 
-- Overall: 87
+- Overall: 89
 - intent_clarity: 90
-- input_specificity: 70
+- input_specificity: 85
 - constraint_clarity: 75
 - workflow_reusability: 100
 - verification_strength: 100
 - output_specificity: 85
 - generalization_safety: 88
+
+## Install readiness
+
+- Grade: install_recommended
+- Recommendation: 승인 후 바로 promote해도 좋습니다.
 
 ### Diagnostics
 

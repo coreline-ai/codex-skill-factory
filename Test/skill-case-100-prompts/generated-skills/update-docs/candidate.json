@@ -49,7 +49,9 @@
         "name": "target",
         "description": "작업 대상 파일, diff, 로그, URL, 문서, 이슈 또는 저장소 범위",
         "required": true,
-        "evidence": [],
+        "evidence": [
+          "README"
+        ],
         "default_placeholder": "[작업 대상]"
       },
       {
@@ -133,10 +135,10 @@
       ]
     },
     "prompt_quality": {
-      "score": 75,
+      "score": 77,
       "dimensions": {
         "intent_clarity": 90,
-        "input_specificity": 55,
+        "input_specificity": 70,
         "constraint_clarity": 60,
         "workflow_reusability": 90,
         "verification_strength": 55,
@@ -144,10 +146,16 @@
         "generalization_safety": 88
       },
       "diagnostics": [
-        "입력 대상이 예시에서 충분히 명확하지 않습니다.",
         "수정 범위와 금지사항을 더 명확히 하는 것이 좋습니다.",
         "검증 기준이나 실행 명령이 부족합니다."
-      ]
+      ],
+      "install_readiness": {
+        "grade": "review_recommended",
+        "recommendation": "preview에서 변수/검증 기준을 확인한 뒤 promote하세요.",
+        "blockers": [
+          "검증 기준이 부족합니다."
+        ]
+      }
     },
     "better_prompt_templates": {
       "minimal": "Update documentation so it accurately reflects the current project behavior. 대상은 [작업 대상]입니다. 완료 후 문서 명령어가 현재 구조와 맞는지 확인한다. 기준으로 확인하고 Audience, Updated sections, Examples, Validation, Follow-ups 형식으로 요약해줘.",

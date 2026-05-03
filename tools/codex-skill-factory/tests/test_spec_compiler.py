@@ -24,9 +24,37 @@ def test_compile_skill_spec_preserves_general_contract_shape():
     assert any(slot["name"] == "target" for slot in spec["variable_slots"])
 
 
+def test_compile_skill_spec_uses_candidate_output_sections_when_present():
+    candidate = {
+        "name": "generate-release-notes",
+        "description": "generate release notes",
+        "output_sections": ["Release summary", "Notable changes", "Validation"],
+    }
+    spec = compile_skill_spec(candidate)
+    assert spec["output_contract"]["required_sections"] == [
+        "Release summary",
+        "Notable changes",
+        "Validation",
+    ]
+
+
 def test_extract_variable_slots_moves_specific_files_to_target_slot():
     candidate = {"example_prompts": ["src/app.py와 README.md를 확인해줘"], "verification": []}
     slots = extract_variable_slots(candidate)
     target = next(slot for slot in slots if slot["name"] == "target")
     assert "src/app.py" in target["evidence"]
     assert target["default_placeholder"] == "[작업 대상]"
+
+
+def test_extract_variable_slots_captures_common_non_file_inputs():
+    candidate = {
+        "example_prompts": [
+            "generate release notes for the latest diff",
+            "write release notes from commits and PR list",
+        ],
+        "verification": [],
+    }
+    slots = extract_variable_slots(candidate)
+    target = next(slot for slot in slots if slot["name"] == "target")
+    assert "latest diff" in target["evidence"]
+    assert "commits" in target["evidence"]
