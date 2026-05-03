@@ -613,13 +613,13 @@ codex-skill-factory dashboard
 
 ## 14. 출시 전 체크리스트
 
-- [ ] `pipx install` 또는 wheel 설치 테스트 완료
+- [x] `pipx install` 또는 wheel 설치 테스트 완료
 - [x] `init`이 빈 project scope 환경에서 성공
-- [ ] hook fixture로 prompt/turn/tool-use 로그 생성 성공
+- [x] hook fixture로 prompt/turn/tool-use 로그 생성 성공
 - [x] secret redaction 테스트 통과
 - [x] `inbox`에서 후보 생성/표시 성공
 - [x] `promote`로 Skill 생성·설치 성공
-- [ ] dashboard 생성 성공
+- [x] dashboard 생성 성공
 - [x] doctor 성공/실패 케이스 검증
 - [x] 기존 advanced 명령 하위 호환 확인
 - [x] README에 golden path 반영
